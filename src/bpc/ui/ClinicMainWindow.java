@@ -5,32 +5,37 @@
 package bpc.ui; // Package declaration
 
 // Imports will be added by NetBeans as you add components
+import bpc.logic.ClinicManager;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import java.awt.Font;
-import javax.swing.GroupLayout; 
-import javax.swing.LayoutStyle; 
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle;
 import javax.swing.BorderFactory;
-import javax.swing.UIManager; 
-import javax.swing.UnsupportedLookAndFeelException; 
-import java.util.logging.Level; 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.awt.Dimension; 
+import java.awt.Dimension;
+import javax.swing.JOptionPane;
 
 /**
  * Main JFrame for the Boost Physio Clinic application GUI.
+ *
  * @author sharin
  */
 public class ClinicMainWindow extends javax.swing.JFrame {
 
-
     /**
      * Creates new form ClinicMainWindow
      */
+    private ClinicManager clinicManager;
+
     public ClinicMainWindow() {
+        clinicManager = new ClinicManager();
         // MODIFICATION: Instantiate your logic manager here (once created)
         // clinicManager = new ClinicManager();
         // clinicManager.initializeSampleData(); // Load data when GUI starts
@@ -48,7 +53,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         setupActionListeners();
     }
 
-     /**
+    /**
      * MODIFICATION: Helper method to add event handlers to buttons.
      */
     private void setupActionListeners() {
@@ -62,7 +67,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         }
 
         // --- Remove Patient Button ---
-         if (removePatientButton != null) {
+        if (removePatientButton != null) {
             removePatientButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     removePatientButtonActionPerformed(evt);
@@ -71,59 +76,58 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         }
 
         // --- Add Physiotherapist Button ---
-         if (addPhysioButton != null) {
-             addPhysioButton.addActionListener(new java.awt.event.ActionListener() {
+        if (addPhysioButton != null) {
+            addPhysioButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     addPhysioButtonActionPerformed(evt);
                 }
             });
-         }
+        }
 
-         // --- Remove Physiotherapist Button ---
-         if (removePhysioButton != null) {
-             removePhysioButton.addActionListener(new java.awt.event.ActionListener() {
+        // --- Remove Physiotherapist Button ---
+        if (removePhysioButton != null) {
+            removePhysioButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     removePhysioButtonActionPerformed(evt);
                 }
             });
-         }
+        }
 
-         // --- Book Appointment Button ---
-         if (bookAppointmentButton != null) {
-             bookAppointmentButton.addActionListener(new java.awt.event.ActionListener() {
+        // --- Book Appointment Button ---
+        if (bookAppointmentButton != null) {
+            bookAppointmentButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     bookAppointmentButtonActionPerformed(evt);
                 }
             });
-         }
+        }
 
-         // --- Manage Booking Button ---
-         if (manageBookingButton != null) {
-             manageBookingButton.addActionListener(new java.awt.event.ActionListener() {
+        // --- Manage Booking Button ---
+        if (manageBookingButton != null) {
+            manageBookingButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     manageBookingButtonActionPerformed(evt);
                 }
             });
-         }
+        }
 
-         // --- Attend Appointment Button ---
-         if (attendAppointmentButton != null) {
-             attendAppointmentButton.addActionListener(new java.awt.event.ActionListener() {
+        // --- Attend Appointment Button ---
+        if (attendAppointmentButton != null) {
+            attendAppointmentButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     attendAppointmentButtonActionPerformed(evt);
                 }
             });
-         }
+        }
 
-         // --- View Reports Button ---
-         if (viewReportsButton != null) {
-             viewReportsButton.addActionListener(new java.awt.event.ActionListener() {
+        // --- View Reports Button ---
+        if (viewReportsButton != null) {
+            viewReportsButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     viewReportsButtonActionPerformed(evt);
                 }
             });
-         }
-
+        }
 
         // --- Exit Button ---
         if (exitButton != null) {
@@ -141,8 +145,8 @@ public class ClinicMainWindow extends javax.swing.JFrame {
      * regenerated by the Form Editor.
      *
      * NOTE: This code is generated by the NetBeans GUI Builder based on the
-     * components you added in the Design view. Manually editing this block
-     * is highly discouraged and may break the designer.
+     * components you added in the Design view. Manually editing this block is
+     * highly discouraged and may break the designer.
      *
      * **MODIFICATION:** This initComponents() method includes a more complete
      * GroupLayout setup. Ensure your Design view reflects this structure.
@@ -277,51 +281,184 @@ public class ClinicMainWindow extends javax.swing.JFrame {
     // These methods are called when the corresponding button is clicked.
     // You will fill these in later to interact with your ClinicManager
     // and potentially open other dialogs/windows.
-
+//start here 
     private void addPatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        
-        System.out.println("Add Patient button clicked - Implement me!");
+
+        System.out.println("Add Patient button clicked."); // For debugging
+
+// Get Name by using JOptionPane
+        String name = JOptionPane.showInputDialog(this, // Parent component
+                "Enter Patient Name:", // Message
+                "Add Patient - Step 1 of 3", // Title
+                JOptionPane.PLAIN_MESSAGE); // Icon type
+
+// Checking if the user cancelled
+        if (name == null) {
+            System.out.println("Add Patient cancelled by user (Name step).");
+            return;
+        }
+        name = name.trim();
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Patient Name cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+// Address using JOptionPane
+        String address = JOptionPane.showInputDialog(this,
+                "Enter Patient Address:",
+                "Add Patient - Step 2 of 3",
+                JOptionPane.PLAIN_MESSAGE);
+
+        if (address == null) {
+            System.out.println("Add Patient cancelled by user (Address step).");
+            return;
+        }
+        address = address.trim();
+        if (address.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Patient Address cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+// Get Phone using JOptionPane
+        String phone = JOptionPane.showInputDialog(this,
+                "Enter Patient Phone Number:",
+                "Add Patient - Step 3 of 3",
+                JOptionPane.PLAIN_MESSAGE);
+
+        if (phone == null) {
+            System.out.println("Add Patient cancelled by user (Phone step).");
+            return;
+        }
+        phone = phone.trim();
+        if (phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Patient Phone Number cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+//  ClinicManager to add the patient
+        if (clinicManager != null) {
+            //  instance variable clinicManager
+            boolean success = clinicManager.addPatient(name, address, phone);
+            if (success) {
+                JOptionPane.showMessageDialog(this,
+                        "Patient '" + name + "' added successfully!",
+                        "Patient Added",
+                        JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("Patient added via JOptionPane.");
+
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Failed to add patient (e.g., duplicate phone number).",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Error: Clinic Manager is not initialized.",
+                    "System Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
 
     }
+//-----end here 
 
-     private void removePatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Remove Patient button clicked - Implement me!");
+ private void removePatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    System.out.println("Remove Patient button clicked."); // For debugging
+
+ 
+    String patientIdToRemove = JOptionPane.showInputDialog(this,
+            "Enter the ID of the patient to remove (e.g., P01):",
+            "Remove Patient",
+            JOptionPane.QUESTION_MESSAGE);
+
+    
+    if (patientIdToRemove == null) {
+        System.out.println("Remove patient cancelled by user.");
+        return; 
+    }
+    patientIdToRemove = patientIdToRemove.trim();
+    if (patientIdToRemove.isEmpty()) {
+         JOptionPane.showMessageDialog(this,
+                "Patient ID cannot be empty.",
+                "Input Error",
+                JOptionPane.WARNING_MESSAGE);
+        return; 
     }
 
-      private void addPhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to remove patient with ID '" + patientIdToRemove + "'?\n" +
+            "This will also cancel all their future booked appointments.",
+            "Confirm Removal",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+    if (confirm != JOptionPane.YES_OPTION) {
+        System.out.println("Patient removal cancelled by confirmation.");
+        return; 
+    }
+
+   
+    if (clinicManager != null) {
+        boolean success = clinicManager.removePatient(patientIdToRemove);
+
+        if (success) {
+            JOptionPane.showMessageDialog(this,
+                    "Patient with ID '" + patientIdToRemove + "' removed successfully.",
+                    "Patient Removed",
+                    JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Patient removal successful for ID: " + patientIdToRemove);
+           
+        } else {
+            
+            JOptionPane.showMessageDialog(this,
+                    "Could not remove patient.\nPatient ID '" + patientIdToRemove + "' not found.",
+                    "Removal Error",
+                    JOptionPane.ERROR_MESSAGE);
+             System.out.println("Patient removal failed for ID: " + patientIdToRemove);
+        }
+    } else {
+         JOptionPane.showMessageDialog(this,
+                "Critical Error: Clinic Manager is not available.",
+                "System Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+}
+ //end
+
+    private void addPhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Add Physio button clicked - Implement me!");
     }
 
-     private void removePhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void removePhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Remove Physio button clicked - Implement me!");
     }
 
-      private void bookAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void bookAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Book Appointment button clicked - Implement me!");
     }
 
-      private void manageBookingButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void manageBookingButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Manage Booking button clicked - Implement me!");
     }
 
-     private void attendAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void attendAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Attend Appointment button clicked - Implement me!");
     }
 
-      private void viewReportsButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void viewReportsButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("View Reports button clicked - Implement me!");
     }
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Exit button clicked. Closing application.");
-            dispose(); // Close this window
-             System.exit(0); // Terminate the application
+        dispose(); // Close this window
+        System.exit(0); // Terminate the application
         // }
     }
 
-
     /**
      * MODIFICATION: This main method starts the GUI application.
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -332,7 +469,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
          */
         try {
             // MODIFICATION: Use System Look and Feel for better OS integration (optional)
-             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             /* Original Nimbus Look and Feel code:
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -349,7 +486,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-       
+
                 new ClinicMainWindow().setVisible(true);
             }
         });
