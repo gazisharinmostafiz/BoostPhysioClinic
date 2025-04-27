@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class Patient {
 
-    private static int nextPatientNumber = 1
+    private static int nextPatientNumber = 1;
     private String patientId;
     private String fullName;
     private String homeAddress;
@@ -52,25 +52,31 @@ public class Patient {
     public void setContactPhone(String contactPhone) {
         this.contactPhone = contactPhone;
     }
-public String toString() {
-      
-        return "Patient{" +
-                "patientId='" + patientId + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", homeAddress='" + homeAddress + '\'' +
-                ", contactPhone='" + contactPhone + '\'' +
-                '}';
+
+    public String toString() {
+
+        return "Patient{"
+                + "patientId='" + patientId + '\''
+                + ", fullName='" + fullName + '\''
+                + ", homeAddress='" + homeAddress + '\''
+                + ", contactPhone='" + contactPhone + '\''
+                + '}';
     }
- public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Patient otherPatient = (Patient) o;
         return Objects.equals(patientId, otherPatient.patientId);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(patientId);
+        return Objects.hashCode(patientId);
     }
 }
-

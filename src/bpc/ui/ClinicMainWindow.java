@@ -1,155 +1,72 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-package bpc.ui; // Package declaration
+package bpc.ui;
 
-// Imports will be added by NetBeans as you add components
-import bpc.logic.ClinicManager;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import java.awt.Font;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle;
-import javax.swing.BorderFactory;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.awt.Dimension;
-import javax.swing.JOptionPane;
+import bpc.logic.ClinicManager;
+import java.util.List;
+import java.util.ArrayList;
+import bpc.model.Patient;
+import bpc.model.Physiotherapist;
+import bpc.model.Treatment;
+import bpc.model.Booking;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 /**
  * Main JFrame for the Boost Physio Clinic application GUI.
- *
- * @author sharin
  */
 public class ClinicMainWindow extends javax.swing.JFrame {
+
+    private ClinicManager clinicManager;
 
     /**
      * Creates new form ClinicMainWindow
      */
-    private ClinicManager clinicManager;
-
     public ClinicMainWindow() {
         clinicManager = new ClinicManager();
-        // MODIFICATION: Instantiate your logic manager here (once created)
-        // clinicManager = new ClinicManager();
-        // clinicManager.initializeSampleData(); // Load data when GUI starts
-
-        // ** IMPORTANT: This method initializes components designed in the NetBeans GUI builder **
         initComponents();
-
-        // --- Optional Customizations after initComponents() ---
-        this.setTitle("Boost Physio Clinic System"); // Set the window title bar text
-        this.setLocationRelativeTo(null); // Center the window on the screen on startup
-        // MODIFICATION: Set a minimum size to prevent window from being too small
-        this.setMinimumSize(new Dimension(400, 500)); // Adjust size as needed
-
-        // MODIFICATION: Call helper method to add event handlers to buttons.
+        postInitConfig();
         setupActionListeners();
     }
 
     /**
-     * MODIFICATION: Helper method to add event handlers to buttons.
+     * Performs configuration after NetBeans initComponents() has run.
+     */
+    private void postInitConfig() {
+        this.setTitle("Boost Physio Clinic System");
+        this.setLocationRelativeTo(null);
+        this.setMinimumSize(new Dimension(450, 600));
+    }
+
+    /**
+     * Attaches action listeners to all interactive components (buttons).
      */
     private void setupActionListeners() {
-        // --- Add Patient Button ---
-        if (addPatientButton != null) {
-            addPatientButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    addPatientButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Remove Patient Button ---
-        if (removePatientButton != null) {
-            removePatientButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    removePatientButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Add Physiotherapist Button ---
-        if (addPhysioButton != null) {
-            addPhysioButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    addPhysioButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Remove Physiotherapist Button ---
-        if (removePhysioButton != null) {
-            removePhysioButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    removePhysioButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Book Appointment Button ---
-        if (bookAppointmentButton != null) {
-            bookAppointmentButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    bookAppointmentButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Manage Booking Button ---
-        if (manageBookingButton != null) {
-            manageBookingButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    manageBookingButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Attend Appointment Button ---
-        if (attendAppointmentButton != null) {
-            attendAppointmentButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    attendAppointmentButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- View Reports Button ---
-        if (viewReportsButton != null) {
-            viewReportsButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    viewReportsButtonActionPerformed(evt);
-                }
-            });
-        }
-
-        // --- Exit Button ---
-        if (exitButton != null) {
-            exitButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    exitButtonActionPerformed(evt);
-                }
-            });
-        }
+        if (addPatientButton != null) addPatientButton.addActionListener(evt -> addPatientButtonActionPerformed(evt));
+        if (removePatientButton != null) removePatientButton.addActionListener(evt -> removePatientButtonActionPerformed(evt));
+        if (addPhysioButton != null) addPhysioButton.addActionListener(evt -> addPhysioButtonActionPerformed(evt));
+        if (removePhysioButton != null) removePhysioButton.addActionListener(evt -> removePhysioButtonActionPerformed(evt));
+        if (bookAppointmentButton != null) bookAppointmentButton.addActionListener(evt -> bookAppointmentButtonActionPerformed(evt));
+        if (manageBookingButton != null) manageBookingButton.addActionListener(evt -> manageBookingButtonActionPerformed(evt));
+        if (attendAppointmentButton != null) attendAppointmentButton.addActionListener(evt -> attendAppointmentButtonActionPerformed(evt));
+        if (viewReportsButton != null) viewReportsButton.addActionListener(evt -> viewReportsButtonActionPerformed(evt));
+        if (viewPhysiosButton != null) viewPhysiosButton.addActionListener(evt -> viewPhysiosButtonActionPerformed(evt));
+        if (viewPatientsButton != null) viewPatientsButton.addActionListener(evt -> viewPatientsButtonActionPerformed(evt));
+        if (viewAppointmentsButton != null) viewAppointmentsButton.addActionListener(evt -> viewAppointmentsButtonActionPerformed(evt));
+        if (exitButton != null) exitButton.addActionListener(evt -> exitButtonActionPerformed(evt));
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
-     *
-     * NOTE: This code is generated by the NetBeans GUI Builder based on the
-     * components you added in the Design view. Manually editing this block is
-     * highly discouraged and may break the designer.
-     *
-     * **MODIFICATION:** This initComponents() method includes a more complete
-     * GroupLayout setup. Ensure your Design view reflects this structure.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -165,6 +82,9 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         manageBookingButton = new JButton();
         attendAppointmentButton = new JButton();
         viewReportsButton = new JButton();
+        viewPhysiosButton = new JButton();
+        viewPatientsButton = new JButton();
+        viewAppointmentsButton = new JButton();
         exitButton = new JButton();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -177,323 +97,373 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         buttonPanel.setBorder(BorderFactory.createEtchedBorder());
 
         addPatientButton.setText("Add Patient");
-
         removePatientButton.setText("Remove Patient");
-
         addPhysioButton.setText("Add Physiotherapist");
-
         removePhysioButton.setText("Remove Physiotherapist");
-
         bookAppointmentButton.setText("Book Appointment");
-
         manageBookingButton.setText("Change/Cancel Booking");
-
         attendAppointmentButton.setText("Attend Appointment");
-
         viewReportsButton.setText("View Reports");
-
+        viewPhysiosButton.setText("View All Physiotherapists");
+        viewPatientsButton.setText("View All Patients");
+        viewAppointmentsButton.setText("View All Appointments");
         exitButton.setText("Exit");
 
-        // --- Layout for the Button Panel ---
-        // This defines how buttons are arranged *within* the panel
         GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
         buttonPanel.setLayout(buttonPanelLayout);
         buttonPanelLayout.setHorizontalGroup(
             buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(buttonPanelLayout.createSequentialGroup()
-                .addContainerGap() // Padding inside the panel
+                .addContainerGap()
                 .addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    // Make all buttons stretch to the panel width (or set preferred sizes)
                     .addComponent(addPatientButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(removePatientButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(addPhysioButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(removePhysioButton, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE) // Example width
+                    .addComponent(removePhysioButton, GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
                     .addComponent(bookAppointmentButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(manageBookingButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(attendAppointmentButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(viewReportsButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(viewPhysiosButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(viewPatientsButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(viewAppointmentsButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(exitButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap()) // Padding inside the panel
+                .addContainerGap())
         );
         buttonPanelLayout.setVerticalGroup(
             buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(buttonPanelLayout.createSequentialGroup()
-                .addContainerGap() // Padding inside the panel
+                .addContainerGap()
                 .addComponent(addPatientButton)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED) // Space between buttons
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(removePatientButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(addPhysioButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(removePhysioButton)
-                .addGap(18, 18, 18) // Larger gap
+                .addGap(18, 18, 18)
                 .addComponent(bookAppointmentButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(manageBookingButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(attendAppointmentButton)
-                .addGap(18, 18, 18) // Larger gap
+                .addGap(18, 18, 18)
                 .addComponent(viewReportsButton)
-                // Use GroupLayout.DEFAULT_SIZE or a specific gap for spacing
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) // Push exit down
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewPhysiosButton)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewPatientsButton)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewAppointmentsButton)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(exitButton)
-                .addContainerGap()) // Padding inside the panel
+                .addContainerGap())
         );
 
-        // --- Layout for the Main JFrame Content Pane ---
-        // This defines how the title label and button panel are arranged in the main window
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap() // Window padding
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    // Title label spans the width, centered (achieved by horizontal alignment on label)
-                    .addComponent(titleLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    // Center the button panel horizontally
+                    .addComponent(titleLabel, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        // Add gaps before and after the panel to center it
-                        // Adjust the '100' values to control centering/width
-                        .addGap(100, 100, Short.MAX_VALUE) // Flexible gap before
-                        .addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE) // Panel takes its preferred width
-                        .addGap(100, 100, Short.MAX_VALUE)) // Flexible gap after
-                 )
-                .addContainerGap()) // Window padding
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap() // Window padding
-                // Add the title label
-                .addComponent(titleLabel, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE) // Give title fixed height
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED) // Space below title
-                // Add the button panel, allowing it to grow vertically if needed
+                .addContainerGap()
+                .addComponent(titleLabel, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap()) // Window padding
+                .addContainerGap())
         );
 
-        // ** IMPORTANT: Call pack() AFTER setting up the layout and adding components **
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // --- MODIFICATION: Add Event Handler Methods ---
-    // These methods are called when the corresponding button is clicked.
-    // You will fill these in later to interact with your ClinicManager
-    // and potentially open other dialogs/windows.
-//start here 
+
+    // === Event Handler Methods (Action Performed) ===
+
     private void addPatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
-
-        System.out.println("Add Patient button clicked."); // For debugging
-
-// Get Name by using JOptionPane
-        String name = JOptionPane.showInputDialog(this, // Parent component
-                "Enter Patient Name:", // Message
-                "Add Patient - Step 1 of 3", // Title
-                JOptionPane.PLAIN_MESSAGE); // Icon type
-
-// Checking if the user cancelled
-        if (name == null) {
-            System.out.println("Add Patient cancelled by user (Name step).");
-            return;
-        }
+        System.out.println("Add Patient button clicked.");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not initialized.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String name = JOptionPane.showInputDialog(this, "Enter Patient Full Name:", "Add Patient - Step 1 of 3", JOptionPane.PLAIN_MESSAGE);
+        if (name == null) { System.out.println("Add Patient cancelled by user (Name step)."); return; }
         name = name.trim();
-        if (name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Patient Name cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-// Address using JOptionPane
-        String address = JOptionPane.showInputDialog(this,
-                "Enter Patient Address:",
-                "Add Patient - Step 2 of 3",
-                JOptionPane.PLAIN_MESSAGE);
-
-        if (address == null) {
-            System.out.println("Add Patient cancelled by user (Address step).");
-            return;
-        }
+        if (name.isEmpty()) { JOptionPane.showMessageDialog(this, "Patient Name cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        String address = JOptionPane.showInputDialog(this, "Enter Patient Home Address:", "Add Patient - Step 2 of 3", JOptionPane.PLAIN_MESSAGE);
+        if (address == null) { System.out.println("Add Patient cancelled by user (Address step)."); return; }
         address = address.trim();
-        if (address.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Patient Address cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-// Get Phone using JOptionPane
-        String phone = JOptionPane.showInputDialog(this,
-                "Enter Patient Phone Number:",
-                "Add Patient - Step 3 of 3",
-                JOptionPane.PLAIN_MESSAGE);
-
-        if (phone == null) {
-            System.out.println("Add Patient cancelled by user (Phone step).");
-            return;
-        }
+        if (address.isEmpty()) { JOptionPane.showMessageDialog(this, "Patient Address cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        String phone = JOptionPane.showInputDialog(this, "Enter Patient Contact Phone:", "Add Patient - Step 3 of 3", JOptionPane.PLAIN_MESSAGE);
+        if (phone == null) { System.out.println("Add Patient cancelled by user (Phone step)."); return; }
         phone = phone.trim();
-        if (phone.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Patient Phone Number cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-//  ClinicManager to add the patient
-        if (clinicManager != null) {
-            //  instance variable clinicManager
-            boolean success = clinicManager.addPatient(name, address, phone);
-            if (success) {
-                JOptionPane.showMessageDialog(this,
-                        "Patient '" + name + "' added successfully!",
-                        "Patient Added",
-                        JOptionPane.INFORMATION_MESSAGE);
-                System.out.println("Patient added via JOptionPane.");
-
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to add patient (e.g., duplicate phone number).",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Error: Clinic Manager is not initialized.",
-                    "System Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-
-    }
-//-----end here 
-
- private void removePatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    System.out.println("Remove Patient button clicked."); // For debugging
-
- 
-    String patientIdToRemove = JOptionPane.showInputDialog(this,
-            "Enter the ID of the patient to remove (e.g., P01):",
-            "Remove Patient",
-            JOptionPane.QUESTION_MESSAGE);
-
-    
-    if (patientIdToRemove == null) {
-        System.out.println("Remove patient cancelled by user.");
-        return; 
-    }
-    patientIdToRemove = patientIdToRemove.trim();
-    if (patientIdToRemove.isEmpty()) {
-         JOptionPane.showMessageDialog(this,
-                "Patient ID cannot be empty.",
-                "Input Error",
-                JOptionPane.WARNING_MESSAGE);
-        return; 
+        if (phone.isEmpty()) { JOptionPane.showMessageDialog(this, "Patient Phone Number cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        boolean success = clinicManager.addPatient(name, address, phone);
+        if (success) { JOptionPane.showMessageDialog(this, "Patient '" + name + "' added successfully!", "Patient Added", JOptionPane.INFORMATION_MESSAGE); System.out.println("Patient added via JOptionPane."); }
+        else { JOptionPane.showMessageDialog(this, "Failed to add patient.\nPlease check details (e.g., phone number might already exist).", "Error Adding Patient", JOptionPane.ERROR_MESSAGE); }
     }
 
-    int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to remove patient with ID '" + patientIdToRemove + "'?\n" +
-            "This will also cancel all their future booked appointments.",
-            "Confirm Removal",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-
-    if (confirm != JOptionPane.YES_OPTION) {
-        System.out.println("Patient removal cancelled by confirmation.");
-        return; 
-    }
-
-   
-    if (clinicManager != null) {
+     private void removePatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Remove Patient button clicked.");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not initialized.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String patientIdToRemove = JOptionPane.showInputDialog(this, "Enter the ID of the patient to remove (e.g., PT01):", "Remove Patient", JOptionPane.QUESTION_MESSAGE);
+        if (patientIdToRemove == null) { System.out.println("Remove patient cancelled by user."); return; }
+        patientIdToRemove = patientIdToRemove.trim();
+        if (patientIdToRemove.isEmpty()) { JOptionPane.showMessageDialog(this, "Patient ID cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove patient with ID '" + patientIdToRemove + "'?\n" + "This will also cancel all their future booked appointments.", "Confirm Removal", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirm != JOptionPane.YES_OPTION) { System.out.println("Patient removal cancelled by confirmation."); return; }
         boolean success = clinicManager.removePatient(patientIdToRemove);
+        if (success) { JOptionPane.showMessageDialog(this, "Patient with ID '" + patientIdToRemove + "' removed successfully.", "Patient Removed", JOptionPane.INFORMATION_MESSAGE); System.out.println("Patient removal successful for ID: " + patientIdToRemove); }
+        else { JOptionPane.showMessageDialog(this, "Could not remove patient.\nPatient ID '" + patientIdToRemove + "' not found.", "Removal Error", JOptionPane.ERROR_MESSAGE); System.out.println("Patient removal failed for ID: " + patientIdToRemove); }
+    }
 
-        if (success) {
-            JOptionPane.showMessageDialog(this,
-                    "Patient with ID '" + patientIdToRemove + "' removed successfully.",
-                    "Patient Removed",
-                    JOptionPane.INFORMATION_MESSAGE);
-            System.out.println("Patient removal successful for ID: " + patientIdToRemove);
-           
-        } else {
-            
-            JOptionPane.showMessageDialog(this,
-                    "Could not remove patient.\nPatient ID '" + patientIdToRemove + "' not found.",
-                    "Removal Error",
-                    JOptionPane.ERROR_MESSAGE);
-             System.out.println("Patient removal failed for ID: " + patientIdToRemove);
+      private void addPhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Add Physio button clicked.");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not initialized.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String name = JOptionPane.showInputDialog(this, "Enter Physiotherapist Full Name:", "Add Physiotherapist - Step 1 of 4", JOptionPane.PLAIN_MESSAGE);
+        if (name == null || name.trim().isEmpty()) { if (name != null) JOptionPane.showMessageDialog(this, "Name cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        String address = JOptionPane.showInputDialog(this, "Enter Practice Address:", "Add Physiotherapist - Step 2 of 4", JOptionPane.PLAIN_MESSAGE);
+        if (address == null || address.trim().isEmpty()) { if (address != null) JOptionPane.showMessageDialog(this, "Address cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        String phone = JOptionPane.showInputDialog(this, "Enter Contact Phone Number:", "Add Physiotherapist - Step 3 of 4", JOptionPane.PLAIN_MESSAGE);
+        if (phone == null || phone.trim().isEmpty()) { if (phone != null) JOptionPane.showMessageDialog(this, "Phone number cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        List<String> expertiseList = new ArrayList<>();
+        while (true) {
+            String expertise = JOptionPane.showInputDialog(this, "Enter an Area of Expertise (or leave blank/cancel when done):", "Add Physiotherapist - Step 4 of N", JOptionPane.PLAIN_MESSAGE);
+            if (expertise == null || expertise.trim().isEmpty()) { break; }
+            expertiseList.add(expertise.trim());
         }
-    } else {
-         JOptionPane.showMessageDialog(this,
-                "Critical Error: Clinic Manager is not available.",
-                "System Error",
-                JOptionPane.ERROR_MESSAGE);
-    }
-}
- //end
-
-    private void addPhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Add Physio button clicked - Implement me!");
+        if (expertiseList.isEmpty()) { JOptionPane.showMessageDialog(this, "At least one area of expertise must be provided.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        boolean success = clinicManager.addPhysiotherapist(name.trim(), address.trim(), phone.trim(), expertiseList);
+        if (success) { JOptionPane.showMessageDialog(this, "Physiotherapist '" + name.trim() + "' added successfully!", "Physiotherapist Added", JOptionPane.INFORMATION_MESSAGE); System.out.println("Physiotherapist added via JOptionPane."); }
+        else { JOptionPane.showMessageDialog(this, "Failed to add physiotherapist.\nPlease check details (e.g., phone number might already exist).", "Error Adding Physiotherapist", JOptionPane.ERROR_MESSAGE); }
     }
 
-    private void removePhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Remove Physio button clicked - Implement me!");
+     private void removePhysioButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Remove Physio button clicked.");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not initialized.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String physioIdToRemove = JOptionPane.showInputDialog(this, "Enter the ID of the physiotherapist to remove (e.g., PH01):", "Remove Physiotherapist", JOptionPane.QUESTION_MESSAGE);
+        if (physioIdToRemove == null) { System.out.println("Remove physiotherapist cancelled by user."); return; }
+        physioIdToRemove = physioIdToRemove.trim();
+        if (physioIdToRemove.isEmpty()) { JOptionPane.showMessageDialog(this, "Physiotherapist ID cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove physiotherapist with ID '" + physioIdToRemove + "'?\n" + "This will also cancel all their future/non-attended appointments.", "Confirm Removal", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirm != JOptionPane.YES_OPTION) { System.out.println("Physiotherapist removal cancelled by confirmation."); return; }
+        boolean success = clinicManager.removePhysiotherapist(physioIdToRemove);
+        if (success) { JOptionPane.showMessageDialog(this, "Physiotherapist with ID '" + physioIdToRemove + "' removed successfully.", "Physiotherapist Removed", JOptionPane.INFORMATION_MESSAGE); System.out.println("Physiotherapist removal successful for ID: " + physioIdToRemove); }
+        else { JOptionPane.showMessageDialog(this, "Could not remove physiotherapist.\nStaff ID '" + physioIdToRemove + "' not found.", "Removal Error", JOptionPane.ERROR_MESSAGE); System.out.println("Physiotherapist removal failed for ID: " + physioIdToRemove); }
     }
 
-    private void bookAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Book Appointment button clicked - Implement me!");
+      private void bookAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Book Appointment button clicked (Enhanced).");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Critical Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String patientId = JOptionPane.showInputDialog(this, "Enter the ID of the patient booking the appointment (e.g., PT01):", "Book Appointment - Step 1: Patient ID", JOptionPane.QUESTION_MESSAGE);
+        if (patientId == null || patientId.trim().isEmpty()) { System.out.println("Booking cancelled by user (Patient ID step)."); return; }
+        patientId = patientId.trim();
+        Object[] searchOptions = {"Search by Expertise", "Search by Physio Name"};
+        int searchChoice = JOptionPane.showOptionDialog(this, "How would you like to find available treatments?", "Book Appointment - Step 2: Search Method", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, searchOptions, searchOptions[0]);
+        if (searchChoice == JOptionPane.CLOSED_OPTION) { System.out.println("Booking cancelled by user (Search method step)."); return; }
+        String searchType = ""; String criteria = "";
+        if (searchChoice == JOptionPane.YES_OPTION) {
+            searchType = "expertise";
+            List<String> expertiseNames = clinicManager.getUniqueExpertiseNames();
+            if (expertiseNames.isEmpty()) { JOptionPane.showMessageDialog(this, "No expertise areas found in the system.", "Error", JOptionPane.WARNING_MESSAGE); return; }
+            StringBuilder expertiseOptions = new StringBuilder("Select an Expertise Area by number:\n\n");
+            for (int i = 0; i < expertiseNames.size(); i++) { expertiseOptions.append(String.format("%d. %s\n", (i + 1), expertiseNames.get(i))); }
+            String expertiseChoiceInput = JOptionPane.showInputDialog(this, expertiseOptions.toString(), "Book Appointment - Step 3a: Select Expertise", JOptionPane.QUESTION_MESSAGE);
+            if (expertiseChoiceInput == null) { System.out.println("Booking cancelled by user (Expertise selection step)."); return; }
+            try { int index = Integer.parseInt(expertiseChoiceInput.trim()) - 1; if (index >= 0 && index < expertiseNames.size()) { criteria = expertiseNames.get(index); } else { JOptionPane.showMessageDialog(this, "Invalid selection number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; } }
+            catch (NumberFormatException e) { JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        } else {
+            searchType = "physioName";
+            List<String> physioDisplayList = clinicManager.getPhysiotherapistDisplayList();
+             if (physioDisplayList.isEmpty()) { JOptionPane.showMessageDialog(this, "No physiotherapists found in the system.", "Error", JOptionPane.WARNING_MESSAGE); return; }
+            StringBuilder physioOptions = new StringBuilder("Select a Physiotherapist by number:\n\n");
+            for (int i = 0; i < physioDisplayList.size(); i++) { physioOptions.append(String.format("%d. %s\n", (i + 1), physioDisplayList.get(i))); }
+             String physioChoiceInput = JOptionPane.showInputDialog(this, physioOptions.toString(), "Book Appointment - Step 3b: Select Physiotherapist", JOptionPane.QUESTION_MESSAGE);
+             if (physioChoiceInput == null) { System.out.println("Booking cancelled by user (Physio selection step)."); return; }
+             try { int index = Integer.parseInt(physioChoiceInput.trim()) - 1; if (index >= 0 && index < physioDisplayList.size()) { String selectedDisplay = physioDisplayList.get(index); criteria = clinicManager.findPhysioNameFromDisplay(selectedDisplay); if (criteria == null) { JOptionPane.showMessageDialog(this, "Error retrieving physiotherapist name.", "Internal Error", JOptionPane.ERROR_MESSAGE); return; } } else { JOptionPane.showMessageDialog(this, "Invalid selection number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; } }
+             catch (NumberFormatException e) { JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        }
+        List<Treatment> availableSlots = clinicManager.findAvailableTreatments(searchType, criteria);
+        if (availableSlots.isEmpty()) { JOptionPane.showMessageDialog(this, "No available future treatment slots found matching your criteria:\n" + "Search Type: " + searchType + "\n" + "Criteria: " + criteria, "No Slots Found", JOptionPane.INFORMATION_MESSAGE); return; }
+        StringBuilder availableSlotsText = new StringBuilder("Please choose a slot number:\n\n");
+        for (int i = 0; i < availableSlots.size(); i++) { Treatment slot = availableSlots.get(i); String physioName = (slot.getPhysiotherapist() != null) ? slot.getPhysiotherapist().getStaffName() : "Unknown Physio"; availableSlotsText.append(String.format("%d. %s with %s\n   on %s in Room %d (ID: %s)\n", (i + 1), slot.getTreatmentName(), physioName, slot.getDateTimeFormatted(), slot.getRoomNumber(), slot.getTreatmentId())); }
+        String choiceInput = JOptionPane.showInputDialog(this, availableSlotsText.toString(), "Book Appointment - Step 4: Select Slot", JOptionPane.PLAIN_MESSAGE);
+        if (choiceInput == null) { System.out.println("Booking cancelled by user (Slot selection step)."); return; }
+        int chosenIndex = -1; Treatment selectedTreatment = null;
+        try { chosenIndex = Integer.parseInt(choiceInput.trim()) - 1; if (chosenIndex >= 0 && chosenIndex < availableSlots.size()) { selectedTreatment = availableSlots.get(chosenIndex); } else { JOptionPane.showMessageDialog(this, "Invalid selection number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; } }
+        catch (NumberFormatException e) { JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number corresponding to the slot.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        if (selectedTreatment != null) {
+            Booking newBooking = clinicManager.createBooking(patientId, selectedTreatment.getTreatmentId());
+            if (newBooking != null) { JOptionPane.showMessageDialog(this, "Appointment booked successfully!\n\n" + "Booking ID: " + newBooking.getBookingId() + "\n" + "Patient: " + newBooking.getPatient().getFullName() + "\n" + "Treatment: " + newBooking.getTreatment().getTreatmentName() + "\n" + "Physio: " + newBooking.getTreatment().getPhysiotherapist().getStaffName() + "\n" + "Date/Time: " + newBooking.getTreatment().getDateTimeFormatted() + "\n" + "Room: " + newBooking.getTreatment().getRoomNumber(), "Booking Confirmation", JOptionPane.INFORMATION_MESSAGE); System.out.println("Booking successful: " + newBooking.getBookingId()); }
+            else { JOptionPane.showMessageDialog(this, "Failed to book appointment.\n" + "Possible reasons:\n" + "- Patient/Treatment ID invalid.\n" + "- Slot became unavailable.\n" + "- Time/Room/Physio conflict detected.\n" + "(Check console logs for details)", "Booking Error", JOptionPane.ERROR_MESSAGE); System.out.println("Booking failed for Patient " + patientId + " and Treatment " + selectedTreatment.getTreatmentId()); }
+        } else { JOptionPane.showMessageDialog(this, "An unexpected error occurred selecting the treatment slot.", "Error", JOptionPane.ERROR_MESSAGE); }
     }
 
-    private void manageBookingButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Manage Booking button clicked - Implement me!");
+      private void manageBookingButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Manage Booking button clicked.");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Critical Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String bookingId = JOptionPane.showInputDialog(this, "Enter the Booking ID to manage (e.g., SL01):", "Manage Booking - Step 1: Booking ID", JOptionPane.QUESTION_MESSAGE);
+        if (bookingId == null || bookingId.trim().isEmpty()) { System.out.println("Manage booking cancelled by user (Booking ID step)."); return; }
+        bookingId = bookingId.trim();
+        Booking booking = clinicManager.findBookingById(bookingId);
+        if (booking == null) { JOptionPane.showMessageDialog(this, "Booking ID '" + bookingId + "' not found.", "Error", JOptionPane.ERROR_MESSAGE); return; }
+        String currentStatus = booking.getStatus();
+        if ("attended".equalsIgnoreCase(currentStatus) || "cancelled".equalsIgnoreCase(currentStatus)) { JOptionPane.showMessageDialog(this, "Booking " + bookingId + " is already '" + currentStatus + "' and cannot be changed or cancelled further.", "Booking Status", JOptionPane.INFORMATION_MESSAGE); return; }
+        if (booking.getTreatment() != null && booking.getTreatment().getDateTime() != null && booking.getTreatment().getDateTime().isBefore(LocalDateTime.now())) { JOptionPane.showMessageDialog(this, "Booking " + bookingId + " is in the past and cannot be changed or cancelled.", "Booking Status", JOptionPane.WARNING_MESSAGE); return; }
+        Object[] options = {"Change Appointment", "Cancel Appointment", "Do Nothing"};
+        int choice = JOptionPane.showOptionDialog(this, "Booking Found:\n" + booking.toString() + "\n\nWhat would you like to do?", "Manage Booking - Step 2: Action", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+        if (choice == JOptionPane.YES_OPTION) {
+            System.out.println("Change Appointment selected for " + bookingId);
+            boolean cancelled = clinicManager.changeBookingStatus(bookingId, "cancelled");
+            if (cancelled) { JOptionPane.showMessageDialog(this, "Booking " + bookingId + " has been cancelled.\nPlease now use 'Book Appointment' to select a new slot.", "Change Appointment - Step 1", JOptionPane.INFORMATION_MESSAGE); }
+            else { JOptionPane.showMessageDialog(this, "Could not cancel the original booking " + bookingId + " to proceed with change.\n(It might be in the past or already cancelled).", "Change Error", JOptionPane.ERROR_MESSAGE); }
+        } else if (choice == JOptionPane.NO_OPTION) {
+             System.out.println("Cancel Appointment selected for " + bookingId);
+             int confirmCancel = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel Booking ID '" + bookingId + "'?", "Confirm Cancellation", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+             if (confirmCancel == JOptionPane.YES_OPTION) {
+                 boolean success = clinicManager.changeBookingStatus(bookingId, "cancelled");
+                 if (success) { JOptionPane.showMessageDialog(this, "Booking " + bookingId + " cancelled successfully.", "Cancellation Confirmed", JOptionPane.INFORMATION_MESSAGE); }
+                 else { JOptionPane.showMessageDialog(this, "Failed to cancel booking " + bookingId + ".\nIt might be in the past or already cancelled/attended.", "Cancellation Error", JOptionPane.ERROR_MESSAGE); }
+             } else { System.out.println("Cancellation aborted by user."); }
+        } else { System.out.println("Manage booking cancelled or closed."); }
     }
 
-    private void attendAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Attend Appointment button clicked - Implement me!");
+     private void attendAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Attend Appointment button clicked.");
+        if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Critical Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        String bookingId = JOptionPane.showInputDialog(this, "Enter the Booking ID to mark as attended (e.g., SL01):", "Attend Appointment", JOptionPane.QUESTION_MESSAGE);
+        if (bookingId == null || bookingId.trim().isEmpty()) { System.out.println("Attend appointment cancelled by user."); return; }
+        bookingId = bookingId.trim();
+        boolean success = clinicManager.changeBookingStatus(bookingId, "attended");
+        if (success) { JOptionPane.showMessageDialog(this, "Booking " + bookingId + " marked as attended successfully.", "Attendance Recorded", JOptionPane.INFORMATION_MESSAGE); }
+        else { JOptionPane.showMessageDialog(this, "Failed to mark booking " + bookingId + " as attended.\n" + "Possible reasons:\n" + "- Booking ID not found.\n" + "- Booking already attended or cancelled.\n" + "- Booking is still in the future.", "Attendance Error", JOptionPane.ERROR_MESSAGE); }
     }
 
-    private void viewReportsButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("View Reports button clicked - Implement me!");
+      private void viewReportsButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("View Reports button clicked.");
+         if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Critical Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
+        StringBuilder reportText = new StringBuilder();
+        reportText.append("--- Appointments per Physiotherapist ---\n\n");
+        List<Physiotherapist> staffList = clinicManager.getAllPhysiotherapists();
+        List<Booking> allBookings = clinicManager.getAllBookings();
+        if (staffList.isEmpty()) { reportText.append("No physiotherapists registered.\n"); }
+        else {
+            staffList.sort(Comparator.comparing(Physiotherapist::getStaffName, String.CASE_INSENSITIVE_ORDER));
+            for (Physiotherapist physio : staffList) {
+                reportText.append("Physiotherapist: ").append(physio.getStaffName()).append(" (ID: ").append(physio.getStaffId()).append(")\n");
+                List<Booking> physioBookings = allBookings.stream()
+                    .filter(b -> b.getTreatment() != null && b.getTreatment().getPhysiotherapist() != null)
+                    .filter(b -> b.getTreatment().getPhysiotherapist().equals(physio))
+                    .sorted(Comparator.comparing(b -> (b.getTreatment() != null && b.getTreatment().getDateTime() != null) ? b.getTreatment().getDateTime() : LocalDateTime.MAX))
+                    .collect(Collectors.toList());
+                if (physioBookings.isEmpty()) { reportText.append("  No appointments found.\n"); }
+                else { for (Booking b : physioBookings) { String patientName = (b.getPatient() != null) ? b.getPatient().getFullName() : "N/A"; String treatmentName = (b.getTreatment() != null) ? b.getTreatment().getTreatmentName() : "N/A"; String dateTime = (b.getTreatment() != null) ? b.getTreatment().getDateTimeFormatted() : "N/A"; reportText.append(String.format("  - %s: Patient: %s, Treatment: %s, Time: %s, Status: %s\n", b.getBookingId(), patientName, treatmentName, dateTime, b.getStatus())); } }
+                 reportText.append("\n");
+            }
+        }
+        reportText.append("\n--- Physiotherapist Ranking (Attended Appointments) ---\n\n");
+        if (staffList.isEmpty()) { reportText.append("No physiotherapists to rank.\n"); }
+        else {
+             Map<Physiotherapist, Long> attendedCounts = allBookings.stream()
+                 .filter(b -> "attended".equals(b.getStatus()))
+                 .filter(b -> b.getTreatment() != null && b.getTreatment().getPhysiotherapist() != null)
+                 .collect(Collectors.groupingBy(b -> b.getTreatment().getPhysiotherapist(), Collectors.counting()));
+            for(Physiotherapist p : staffList) { attendedCounts.putIfAbsent(p, 0L); }
+            List<Map.Entry<Physiotherapist, Long>> sortedList = attendedCounts.entrySet().stream()
+                .sorted(Map.Entry.<Physiotherapist, Long>comparingByValue(Comparator.reverseOrder()).thenComparing(entry -> entry.getKey().getStaffName()))
+                .collect(Collectors.toList());
+             if (sortedList.isEmpty() || sortedList.stream().allMatch(e -> e.getValue() == 0)) { reportText.append("No attended appointments recorded yet.\n"); }
+             else {
+                 reportText.append("Rank | Physiotherapist Name         | Attended\n");
+                 reportText.append("-----------------------------------------------\n");
+                 int rank = 1;
+                 for (Map.Entry<Physiotherapist, Long> entry : sortedList) { reportText.append(String.format("%-4d | %-28s | %d\n", rank++, entry.getKey().getStaffName(), entry.getValue())); }
+             }
+        }
+        JTextArea textArea = new JTextArea(reportText.toString());
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        textArea.setRows(25); textArea.setColumns(60);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        JOptionPane.showMessageDialog(this, scrollPane, "Clinic Reports", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void viewPhysiosButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("View All Physiotherapists button clicked.");
+        if (clinicManager != null) {
+            List<Physiotherapist> staffList = clinicManager.getAllPhysiotherapists();
+            if (staffList.isEmpty()) { JOptionPane.showMessageDialog(this, "No physiotherapists registered in the system.", "Physiotherapist List", JOptionPane.INFORMATION_MESSAGE); }
+            else {
+                StringBuilder sb = new StringBuilder("--- All Physiotherapists ---\n\n");
+                for (Physiotherapist physio : staffList) { sb.append("ID: ").append(physio.getStaffId()).append("\n").append("Name: ").append(physio.getStaffName()).append("\n").append("Address: ").append(physio.getPracticeAddress()).append("\n").append("Phone: ").append(physio.getContactNumber()).append("\n").append("Expertise: ").append(physio.getAreasOfExpertise()).append("\n").append("-----------------------------\n"); }
+                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setRows(15); textArea.setColumns(40);
+                JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "Physiotherapist Details", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
+    }
+
+    private void viewPatientsButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("View All Patients button clicked.");
+         if (clinicManager != null) {
+            List<Patient> patientList = clinicManager.getAllPatients();
+            if (patientList.isEmpty()) { JOptionPane.showMessageDialog(this, "No patients registered in the system.", "Patient List", JOptionPane.INFORMATION_MESSAGE); }
+            else {
+                StringBuilder sb = new StringBuilder("--- All Patients ---\n\n");
+                for (Patient patient : patientList) { sb.append("ID: ").append(patient.getPatientId()).append("\n").append("Name: ").append(patient.getFullName()).append("\n").append("Address: ").append(patient.getHomeAddress()).append("\n").append("Phone: ").append(patient.getContactPhone()).append("\n").append("-----------------------------\n"); }
+                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setRows(15); textArea.setColumns(40);
+                JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "Patient Details", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
+    }
+
+     private void viewAppointmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("View All Appointments button clicked.");
+        if (clinicManager != null) {
+            List<Booking> bookingList = clinicManager.getAllBookings();
+            if (bookingList.isEmpty()) { JOptionPane.showMessageDialog(this, "No bookings found in the system.", "Appointment Schedule", JOptionPane.INFORMATION_MESSAGE); }
+            else {
+                bookingList.sort(Comparator.comparing(b -> (b.getTreatment() != null && b.getTreatment().getDateTime() != null) ? b.getTreatment().getDateTime() : LocalDateTime.MAX ));
+                StringBuilder sb = new StringBuilder("--- All Bookings ---\n\n");
+                for (Booking booking : bookingList) { sb.append(booking.toString()).append("\n").append("---------------------------------------------------\n"); }
+                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setFont(new Font("Monospaced", Font.PLAIN, 12)); textArea.setRows(20); textArea.setColumns(70);
+                JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "All Bookings", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
     }
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Exit button clicked. Closing application.");
-        dispose(); // Close this window
-        System.exit(0); // Terminate the application
-        // }
+        dispose();
+        System.exit(0);
     }
+    // === End Event Handler Methods ===
 
+
+    // === Main Method (Entry Point) ===
     /**
-     * MODIFICATION: This main method starts the GUI application.
-     *
+     * Main method to launch the GUI application.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            // MODIFICATION: Use System Look and Feel for better OS integration (optional)
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            /* Original Nimbus Look and Feel code:
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }*/
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            // MODIFICATION: Use Logger for exceptions
-            Logger.getLogger(ClinicMainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+        try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) { Logger.getLogger(ClinicMainWindow.class.getName()).log(Level.SEVERE, null, ex); }
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-                new ClinicMainWindow().setVisible(true);
-            }
-        });
+        /* Create and display the form on the Event Dispatch Thread */
+        java.awt.EventQueue.invokeLater(() -> { new ClinicMainWindow().setVisible(true); });
     }
+    // === End Main Method ===
 
+
+    // === Variable Declarations (Generated by NetBeans) ===
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    // MODIFICATION: These variables are declared here by NetBeans GUI builder
     private JButton addPatientButton;
     private JButton addPhysioButton;
     private JButton attendAppointmentButton;
@@ -504,6 +474,11 @@ public class ClinicMainWindow extends javax.swing.JFrame {
     private JButton removePatientButton;
     private JButton removePhysioButton;
     private JLabel titleLabel;
+    private JButton viewAppointmentsButton;
+    private JButton viewPatientsButton;
+    private JButton viewPhysiosButton;
     private JButton viewReportsButton;
     // End of variables declaration//GEN-END:variables
-}
+    // === End Variable Declarations ===
+
+} // End of Class ClinicMainWindow
