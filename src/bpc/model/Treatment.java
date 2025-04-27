@@ -16,6 +16,9 @@ import java.util.Objects;
 public class Treatment {
 
     private static int nextTreatmentCode = 1;
+    public static void resetIdCounter() {
+    nextTreatmentCode = 1;
+}
     private static final DateTimeFormatter STANDARD_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private String treatmentId;
     private String treatmentName;

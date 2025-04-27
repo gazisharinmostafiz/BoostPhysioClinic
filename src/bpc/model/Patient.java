@@ -13,6 +13,9 @@ import java.util.Objects;
 public class Patient {
 
     private static int nextPatientNumber = 1;
+    public static void resetIdCounter() {
+    nextPatientNumber = 1;
+}
     private String patientId;
     private String fullName;
     private String homeAddress;

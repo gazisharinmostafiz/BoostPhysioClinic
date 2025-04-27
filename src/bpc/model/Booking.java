@@ -14,6 +14,9 @@ public class Booking {
 
     private static int nextBookingRef = 1;
 
+    public static void resetIdCounter() {
+        nextBookingRef = 1;
+    }
     private String bookingId;
     private Patient bookedPatient;
     private Treatment bookedTreatment;

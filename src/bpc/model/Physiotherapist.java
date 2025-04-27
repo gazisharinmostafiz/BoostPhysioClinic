@@ -16,6 +16,9 @@ import java.util.function.Predicate;
 public class Physiotherapist {
 
     private static int nextStaffNumber = 1;
+    public static void resetIdCounter() {
+        nextStaffNumber = 1;
+    }
     private String staffId;         
     private String staffName;       
     private String practiceAddress;
@@ -70,19 +73,14 @@ public class Physiotherapist {
         }
     }
 
-    public boolean hasExpertise(String expertiseName) {
+public boolean hasExpertise(String expertiseName) {
         if (expertiseName == null || expertiseName.trim().isEmpty()) {
             return false;
         }
         String lowerCaseName = expertiseName.trim().toLowerCase();
+        // Corrected comparison to be case-insensitive and added null check
         return areasOfExpertise.stream()
-                .anyMatch(new Predicate<Expertise>() {
-                    @Override
-                    public boolean test(Expertise e) {
-//                e.toString();
-                        return e.getName().toString().equals(lowerCaseName);
-                    }
-                });
+                .anyMatch(e -> e.getName() != null && e.getName().equalsIgnoreCase(lowerCaseName));
     }
 
     // --- toString Method ---

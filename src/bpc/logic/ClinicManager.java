@@ -38,6 +38,30 @@ public class ClinicManager {
     public ClinicManager() {
         loadInitialSampleData();
     }
+    
+    public void resetAndLoadData() {
+    System.out.println("ClinicManager: Clearing existing data and reloading sample data...");
+
+    Patient.resetIdCounter();
+    Physiotherapist.resetIdCounter();
+    Treatment.resetIdCounter(); 
+    Booking.resetIdCounter();  
+    registeredPatients.clear();
+    clinicStaff.clear();
+    availableTreatments.clear();
+    appointmentSchedule.clear();
+    loadInitialSampleData(); 
+}
+//    
+//    public void resetAndLoadData() {
+//        System.out.println("ClinicManager: Clearing existing data and reloading sample data...");
+//        registeredPatients.clear();
+//        clinicStaff.clear();
+//        availableTreatments.clear();
+//        appointmentSchedule.clear();
+//        loadInitialSampleData();
+//    }
+        
 
     private void loadInitialSampleData() {
         System.out.println("ClinicManager: Loading initial sample data...");
