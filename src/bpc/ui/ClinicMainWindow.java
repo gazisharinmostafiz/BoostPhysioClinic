@@ -213,7 +213,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
      private void removePatientButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Remove Patient button clicked.");
         if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not initialized.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
-        String patientIdToRemove = JOptionPane.showInputDialog(this, "Enter the ID of the patient to remove (e.g., PT01):", "Remove Patient", JOptionPane.QUESTION_MESSAGE);
+        String patientIdToRemove = JOptionPane.showInputDialog(this, "Enter the ID of the patient to remove (e.g., P01):", "Remove Patient", JOptionPane.QUESTION_MESSAGE);
         if (patientIdToRemove == null) { System.out.println("Remove patient cancelled by user."); return; }
         patientIdToRemove = patientIdToRemove.trim();
         if (patientIdToRemove.isEmpty()) { JOptionPane.showMessageDialog(this, "Patient ID cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }

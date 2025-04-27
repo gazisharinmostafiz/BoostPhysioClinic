@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class ClinicManager {
+
     private List<Patient> registeredPatients = new ArrayList<>();
     private List<Physiotherapist> clinicStaff = new ArrayList<>();
     private List<Treatment> availableTreatments = new ArrayList<>();
@@ -38,20 +39,20 @@ public class ClinicManager {
     public ClinicManager() {
         loadInitialSampleData();
     }
-    
-    public void resetAndLoadData() {
-    System.out.println("ClinicManager: Clearing existing data and reloading sample data...");
 
-    Patient.resetIdCounter();
-    Physiotherapist.resetIdCounter();
-    Treatment.resetIdCounter(); 
-    Booking.resetIdCounter();  
-    registeredPatients.clear();
-    clinicStaff.clear();
-    availableTreatments.clear();
-    appointmentSchedule.clear();
-    loadInitialSampleData(); 
-}
+    public void resetAndLoadData() {
+        System.out.println("ClinicManager: Clearing existing data and reloading sample data...");
+
+        Patient.resetIdCounter();
+        Physiotherapist.resetIdCounter();
+        Treatment.resetIdCounter();
+        Booking.resetIdCounter();
+        registeredPatients.clear();
+        clinicStaff.clear();
+        availableTreatments.clear();
+        appointmentSchedule.clear();
+        loadInitialSampleData();
+    }
 //    
 //    public void resetAndLoadData() {
 //        System.out.println("ClinicManager: Clearing existing data and reloading sample data...");
@@ -61,7 +62,6 @@ public class ClinicManager {
 //        appointmentSchedule.clear();
 //        loadInitialSampleData();
 //    }
-        
 
     private void loadInitialSampleData() {
         System.out.println("ClinicManager: Loading initial sample data...");
@@ -134,6 +134,7 @@ public class ClinicManager {
         availableTreatments.add(new Treatment("Sports Massage", datePrefix + "18 11:00", physio1, 1));
         availableTreatments.add(new Treatment("Rehabilitation Exercise", datePrefix + "26 14:00", physio3, 4));
         availableTreatments.add(new Treatment("Joint Mobilisation", datePrefix + "27 11:00", physio2, 2));
+        availableTreatments.add(new Treatment("Past Consult", "2025-04-25 11:00", physio4, 5));
         System.out.println(" -> Loaded " + availableTreatments.size() + " available treatment slots.");
 
         Patient p1 = registeredPatients.get(0);
@@ -147,12 +148,40 @@ public class ClinicManager {
         Treatment t6 = availableTreatments.get(6);
         Treatment t7 = availableTreatments.get(7);
         Treatment t12 = availableTreatments.get(12);
-        if (t1 != null && t1.getDateTime() != null) { appointmentSchedule.add(new Booking(p1, t1)); }
-        if (t2 != null && t2.getDateTime() != null) { Booking b2 = new Booking(p2, t2); b2.setStatus("attended"); appointmentSchedule.add(b2); }
-        if (t3 != null && t3.getDateTime() != null) { Booking b3 = new Booking(p3, t3); b3.setStatus("cancelled"); appointmentSchedule.add(b3); }
-        if (t6 != null && t6.getDateTime() != null) { appointmentSchedule.add(new Booking(p4, t6)); }
-        if (t7 != null && t7.getDateTime() != null) { Booking b5 = new Booking(p5, t7); b5.setStatus("attended"); appointmentSchedule.add(b5); }
-        if (t12 != null && t12.getDateTime() != null) { Booking b6 = new Booking(p1, t12); b6.setStatus("attended"); appointmentSchedule.add(b6); }
+        if (t1 != null && t1.getDateTime() != null) {
+            appointmentSchedule.add(new Booking(p1, t1));
+        }
+        if (t2 != null && t2.getDateTime() != null) {
+            Booking b2 = new Booking(p2, t2);
+            b2.setStatus("attended");
+            appointmentSchedule.add(b2);
+        }
+        if (t3 != null && t3.getDateTime() != null) {
+            Booking b3 = new Booking(p3, t3);
+            b3.setStatus("cancelled");
+            appointmentSchedule.add(b3);
+        }
+        if (t6 != null && t6.getDateTime() != null) {
+            appointmentSchedule.add(new Booking(p4, t6));
+        }
+        if (t7 != null && t7.getDateTime() != null) {
+            Booking b5 = new Booking(p5, t7);
+            b5.setStatus("attended");
+            appointmentSchedule.add(b5);
+        }
+        if (t12 != null && t12.getDateTime() != null) {
+            Booking b6 = new Booking(p1, t12);
+            b6.setStatus("attended");
+            appointmentSchedule.add(b6);
+        }
+
+        // Add a booking for the past treatment for the 'Attend Appointment' demo
+        Patient p5_demo = registeredPatients.get(9); // Get Patient P10 (Nadia Hussain) or another existing patient
+        Treatment pastTreatment = availableTreatments.get(availableTreatments.size() - 1); // Get the last added treatment (our past one)
+        if (p5_demo != null && pastTreatment != null && pastTreatment.getDateTime() != null) {
+            appointmentSchedule.add(new Booking(p5_demo, pastTreatment));
+        }
+
         System.out.println(" -> Created " + appointmentSchedule.size() + " sample bookings.");
         System.out.println("ClinicManager: Sample data loading complete.");
     }
@@ -179,38 +208,40 @@ public class ClinicManager {
             System.err.println("[MANAGER VALIDATION] Error: Cannot add physiotherapist - required name, address, or phone are missing.");
             return false;
         }
-         if (expertiseNames == null || expertiseNames.isEmpty()) {
-             System.err.println("[MANAGER VALIDATION] Error: Cannot add physiotherapist - at least one expertise must be provided.");
-             return false;
-         }
-         String trimmedPhone = phone.trim();
-         boolean phoneExists = clinicStaff.stream().anyMatch(p -> p.getContactNumber().equals(trimmedPhone));
-         if (phoneExists) {
-             System.err.println("[MANAGER VALIDATION] Duplicate Error: A staff member with phone number '" + trimmedPhone + "' already exists.");
-             return false;
-         }
-         Physiotherapist newPhysio = new Physiotherapist(name.trim(), address.trim(), trimmedPhone);
-         Set<String> addedExpertise = new HashSet<>();
-         for (String expName : expertiseNames) {
-             if (expName != null && !expName.trim().isEmpty()) {
-                 String trimmedExpName = expName.trim();
-                 if (addedExpertise.add(trimmedExpName.toLowerCase())) {
-                     newPhysio.addExpertise(new Expertise(trimmedExpName));
-                     System.out.println("  -> Added expertise '" + trimmedExpName + "' to " + newPhysio.getStaffName());
-                 }
-             }
-         }
-         clinicStaff.add(newPhysio);
-         System.out.println("[MANAGER INFO] New physiotherapist record created successfully: ID=" + newPhysio.getStaffId() + ", Name=" + newPhysio.getStaffName());
-         return true;
+        if (expertiseNames == null || expertiseNames.isEmpty()) {
+            System.err.println("[MANAGER VALIDATION] Error: Cannot add physiotherapist - at least one expertise must be provided.");
+            return false;
+        }
+        String trimmedPhone = phone.trim();
+        boolean phoneExists = clinicStaff.stream().anyMatch(p -> p.getContactNumber().equals(trimmedPhone));
+        if (phoneExists) {
+            System.err.println("[MANAGER VALIDATION] Duplicate Error: A staff member with phone number '" + trimmedPhone + "' already exists.");
+            return false;
+        }
+        Physiotherapist newPhysio = new Physiotherapist(name.trim(), address.trim(), trimmedPhone);
+        Set<String> addedExpertise = new HashSet<>();
+        for (String expName : expertiseNames) {
+            if (expName != null && !expName.trim().isEmpty()) {
+                String trimmedExpName = expName.trim();
+                if (addedExpertise.add(trimmedExpName.toLowerCase())) {
+                    newPhysio.addExpertise(new Expertise(trimmedExpName));
+                    System.out.println("  -> Added expertise '" + trimmedExpName + "' to " + newPhysio.getStaffName());
+                }
+            }
+        }
+        clinicStaff.add(newPhysio);
+        System.out.println("[MANAGER INFO] New physiotherapist record created successfully: ID=" + newPhysio.getStaffId() + ", Name=" + newPhysio.getStaffName());
+        return true;
     }
 
     public List<Patient> getAllPatients() {
         return new ArrayList<>(registeredPatients);
     }
+
     public List<Physiotherapist> getAllPhysiotherapists() {
         return new ArrayList<>(clinicStaff);
     }
+
     public List<Booking> getAllBookings() {
         return new ArrayList<>(appointmentSchedule);
     }
@@ -269,13 +300,20 @@ public class ClinicManager {
                 System.out.println("  -> Cancelled booking ID: " + booking.getBookingId());
             }
         }
-        if (cancelledCount > 0) { System.out.println("[MANAGER INFO] Cancelled " + cancelledCount + " future booking(s) for patient " + patientToRemove.getPatientId() + "."); }
-        else { System.out.println("[MANAGER INFO] No active future bookings found to cancel for patient " + patientToRemove.getPatientId() + "."); }
+        if (cancelledCount > 0) {
+            System.out.println("[MANAGER INFO] Cancelled " + cancelledCount + " future booking(s) for patient " + patientToRemove.getPatientId() + ".");
+        } else {
+            System.out.println("[MANAGER INFO] No active future bookings found to cancel for patient " + patientToRemove.getPatientId() + ".");
+        }
         boolean removed = registeredPatients.remove(patientToRemove);
-        if (removed) { System.out.println("[MANAGER INFO] Patient record " + patientToRemove.getPatientId() + " removed successfully."); }
-        else { System.err.println("[MANAGER ERROR] Failed to remove patient " + patientToRemove.getPatientId() + " from the list, although they were found initially."); }
+        if (removed) {
+            System.out.println("[MANAGER INFO] Patient record " + patientToRemove.getPatientId() + " removed successfully.");
+        } else {
+            System.err.println("[MANAGER ERROR] Failed to remove patient " + patientToRemove.getPatientId() + " from the list, although they were found initially.");
+        }
         return removed;
     }
+
     public boolean removePhysiotherapist(String staffId) {
         if (staffId == null || staffId.trim().isEmpty()) {
             System.err.println("[MANAGER VALIDATION] Error: Attempted to remove physiotherapist with null or empty ID.");
@@ -295,9 +333,12 @@ public class ClinicManager {
         for (Treatment t : availableTreatments) {
             if (t.getPhysiotherapist() != null && t.getPhysiotherapist().equals(physioToRemove)) {
                 boolean isAttended = appointmentSchedule.stream()
-                    .anyMatch(b -> b.getTreatment() != null && b.getTreatment().equals(t) && "attended".equals(b.getStatus()));
-                if (!isAttended) { treatmentsToCancelOrRemove.add(t); }
-                else { System.out.println("  -> Keeping attended treatment: " + t.getTreatmentId() + " (" + t.getTreatmentName() + ")"); }
+                        .anyMatch(b -> b.getTreatment() != null && b.getTreatment().equals(t) && "attended".equals(b.getStatus()));
+                if (!isAttended) {
+                    treatmentsToCancelOrRemove.add(t);
+                } else {
+                    System.out.println("  -> Keeping attended treatment: " + t.getTreatmentId() + " (" + t.getTreatmentName() + ")");
+                }
             }
         }
         int cancelledBookingsCount = 0;
@@ -312,13 +353,21 @@ public class ClinicManager {
                 }
             }
         }
-         if (cancelledBookingsCount > 0) { System.out.println("[MANAGER INFO] Cancelled " + cancelledBookingsCount + " booking(s) associated with removed physiotherapist."); }
-         else { System.out.println("[MANAGER INFO] No active bookings found to cancel for treatments associated with " + physioToRemove.getStaffId() + "."); }
+        if (cancelledBookingsCount > 0) {
+            System.out.println("[MANAGER INFO] Cancelled " + cancelledBookingsCount + " booking(s) associated with removed physiotherapist.");
+        } else {
+            System.out.println("[MANAGER INFO] No active bookings found to cancel for treatments associated with " + physioToRemove.getStaffId() + ".");
+        }
         boolean treatmentsRemoved = availableTreatments.removeAll(treatmentsToCancelOrRemove);
-        if (treatmentsRemoved && !treatmentsToCancelOrRemove.isEmpty()) { System.out.println("[MANAGER INFO] Removed " + treatmentsToCancelOrRemove.size() + " non-attended treatment slots associated with " + physioToRemove.getStaffId() + "."); }
+        if (treatmentsRemoved && !treatmentsToCancelOrRemove.isEmpty()) {
+            System.out.println("[MANAGER INFO] Removed " + treatmentsToCancelOrRemove.size() + " non-attended treatment slots associated with " + physioToRemove.getStaffId() + ".");
+        }
         boolean staffRemoved = clinicStaff.remove(physioToRemove);
-        if (staffRemoved) { System.out.println("[MANAGER INFO] Physiotherapist record " + physioToRemove.getStaffId() + " removed successfully."); }
-        else { System.err.println("[MANAGER ERROR] Failed to remove physiotherapist " + physioToRemove.getStaffId() + " from the list, although they were found initially."); }
+        if (staffRemoved) {
+            System.out.println("[MANAGER INFO] Physiotherapist record " + physioToRemove.getStaffId() + " removed successfully.");
+        } else {
+            System.err.println("[MANAGER ERROR] Failed to remove physiotherapist " + physioToRemove.getStaffId() + " from the list, although they were found initially.");
+        }
         return staffRemoved;
     }
 
@@ -333,105 +382,106 @@ public class ClinicManager {
 
         if ("expertise".equalsIgnoreCase(searchBy)) {
             potentialSlots = availableTreatments.stream()
-                .filter(t -> t.getPhysiotherapist() != null && t.getPhysiotherapist().hasExpertise(trimmedCriteria))
-                .collect(Collectors.toList());
+                    .filter(t -> t.getPhysiotherapist() != null && t.getPhysiotherapist().hasExpertise(trimmedCriteria))
+                    .collect(Collectors.toList());
         } else if ("physioName".equalsIgnoreCase(searchBy)) {
-             potentialSlots = availableTreatments.stream()
-                .filter(t -> t.getPhysiotherapist() != null && t.getPhysiotherapist().getStaffName().toLowerCase().contains(trimmedCriteria))
-                .collect(Collectors.toList());
+            potentialSlots = availableTreatments.stream()
+                    .filter(t -> t.getPhysiotherapist() != null && t.getPhysiotherapist().getStaffName().toLowerCase().contains(trimmedCriteria))
+                    .collect(Collectors.toList());
         } else {
-             System.err.println("[MANAGER ERROR] Invalid search type specified: " + searchBy);
-             return new ArrayList<>();
+            System.err.println("[MANAGER ERROR] Invalid search type specified: " + searchBy);
+            return new ArrayList<>();
         }
 
         List<Treatment> availableFutureSlots = potentialSlots.stream()
-            .filter(t -> t.getDateTime() != null && t.getDateTime().isAfter(now))
-            .filter(t -> !isTreatmentBooked(t))
-            .sorted(Comparator.comparing(Treatment::getDateTime))
-            .collect(Collectors.toList());
+                .filter(t -> t.getDateTime() != null && t.getDateTime().isAfter(now))
+                .filter(t -> !isTreatmentBooked(t))
+                .sorted(Comparator.comparing(Treatment::getDateTime))
+                .collect(Collectors.toList());
 
         System.out.println("[MANAGER INFO] Found " + availableFutureSlots.size() + " available slots matching criteria: " + searchBy + "='" + criteria + "'");
         return availableFutureSlots;
     }
 
     private boolean isTreatmentBooked(Treatment treatment) {
-        if (treatment == null) return true;
+        if (treatment == null) {
+            return true;
+        }
         return appointmentSchedule.stream()
-               .anyMatch(b -> b.getTreatment() != null && b.getTreatment().equals(treatment) && "booked".equals(b.getStatus()));
+                .anyMatch(b -> b.getTreatment() != null && b.getTreatment().equals(treatment) && "booked".equals(b.getStatus()));
     }
 
-
     public Booking createBooking(String patientId, String treatmentId) {
-         if (patientId == null || patientId.trim().isEmpty() || treatmentId == null || treatmentId.trim().isEmpty()) {
-             System.err.println("[MANAGER VALIDATION] Patient ID or Treatment ID cannot be empty for booking.");
-             return null;
-         }
+        if (patientId == null || patientId.trim().isEmpty() || treatmentId == null || treatmentId.trim().isEmpty()) {
+            System.err.println("[MANAGER VALIDATION] Patient ID or Treatment ID cannot be empty for booking.");
+            return null;
+        }
 
-         Patient patient = findPatientById(patientId);
-         if (patient == null) {
-              System.err.println("[MANAGER ERROR] Booking failed: Patient with ID '" + patientId + "' not found.");
-              return null;
-         }
+        Patient patient = findPatientById(patientId);
+        if (patient == null) {
+            System.err.println("[MANAGER ERROR] Booking failed: Patient with ID '" + patientId + "' not found.");
+            return null;
+        }
 
-         Treatment treatment = findTreatmentById(treatmentId);
-          if (treatment == null) {
-              System.err.println("[MANAGER ERROR] Booking failed: Treatment with ID '" + treatmentId + "' not found.");
-              return null;
-         }
-          if (treatment.getDateTime() == null || treatment.getDateTime().isBefore(LocalDateTime.now())) {
-               System.err.println("[MANAGER ERROR] Booking failed: Treatment '" + treatmentId + "' is in the past or has an invalid date.");
-               return null;
-          }
+        Treatment treatment = findTreatmentById(treatmentId);
+        if (treatment == null) {
+            System.err.println("[MANAGER ERROR] Booking failed: Treatment with ID '" + treatmentId + "' not found.");
+            return null;
+        }
+        if (treatment.getDateTime() == null || treatment.getDateTime().isBefore(LocalDateTime.now())) {
+            System.err.println("[MANAGER ERROR] Booking failed: Treatment '" + treatmentId + "' is in the past or has an invalid date.");
+            return null;
+        }
 
-         LocalDateTime bookingTime = treatment.getDateTime();
-         int bookingRoom = treatment.getRoomNumber();
-         Physiotherapist bookingPhysio = treatment.getPhysiotherapist();
-         if (bookingPhysio == null) {
-              System.err.println("[MANAGER ERROR] Booking failed: Treatment '" + treatmentId + "' has no assigned physiotherapist.");
-              return null;
-         }
+        LocalDateTime bookingTime = treatment.getDateTime();
+        int bookingRoom = treatment.getRoomNumber();
+        Physiotherapist bookingPhysio = treatment.getPhysiotherapist();
+        if (bookingPhysio == null) {
+            System.err.println("[MANAGER ERROR] Booking failed: Treatment '" + treatmentId + "' has no assigned physiotherapist.");
+            return null;
+        }
 
-         if (isTreatmentBooked(treatment)) {
-              System.err.println("[MANAGER CONFLICT] Booking failed: Treatment slot " + treatmentId + " is already booked.");
-              return null;
-         }
+        if (isTreatmentBooked(treatment)) {
+            System.err.println("[MANAGER CONFLICT] Booking failed: Treatment slot " + treatmentId + " is already booked.");
+            return null;
+        }
 
-         boolean patientTimeConflict = appointmentSchedule.stream()
-                 .anyMatch(b -> b.getPatient() != null && b.getPatient().equals(patient)
-                               && b.getTreatment() != null && b.getTreatment().getDateTime() != null
-                               && b.getTreatment().getDateTime().equals(bookingTime)
-                               && "booked".equals(b.getStatus()));
-         if (patientTimeConflict) {
-             System.err.println("[MANAGER CONFLICT] Booking failed: Patient " + patient.getPatientId() + " already has an appointment at " + bookingTime.format(STANDARD_DATE_TIME_FORMAT));
-             return null;
-         }
+        boolean patientTimeConflict = appointmentSchedule.stream()
+                .anyMatch(b -> b.getPatient() != null && b.getPatient().equals(patient)
+                && b.getTreatment() != null && b.getTreatment().getDateTime() != null
+                && b.getTreatment().getDateTime().equals(bookingTime)
+                && "booked".equals(b.getStatus()));
+        if (patientTimeConflict) {
+            System.err.println("[MANAGER CONFLICT] Booking failed: Patient " + patient.getPatientId() + " already has an appointment at " + bookingTime.format(STANDARD_DATE_TIME_FORMAT));
+            return null;
+        }
 
-         boolean roomTimeConflict = appointmentSchedule.stream()
-                 .anyMatch(b -> b.getTreatment() != null
-                               && b.getTreatment().getRoomNumber() == bookingRoom
-                               && b.getTreatment().getDateTime() != null
-                               && b.getTreatment().getDateTime().equals(bookingTime)
-                               && "booked".equals(b.getStatus()));
-         if (roomTimeConflict) {
-             System.err.println("[MANAGER CONFLICT] Booking failed: Room " + bookingRoom + " is already booked at " + bookingTime.format(STANDARD_DATE_TIME_FORMAT));
-             return null;
-         }
+        boolean roomTimeConflict = appointmentSchedule.stream()
+                .anyMatch(b -> b.getTreatment() != null
+                && b.getTreatment().getRoomNumber() == bookingRoom
+                && b.getTreatment().getDateTime() != null
+                && b.getTreatment().getDateTime().equals(bookingTime)
+                && "booked".equals(b.getStatus()));
+        if (roomTimeConflict) {
+            System.err.println("[MANAGER CONFLICT] Booking failed: Room " + bookingRoom + " is already booked at " + bookingTime.format(STANDARD_DATE_TIME_FORMAT));
+            return null;
+        }
 
-          boolean physioTimeConflict = appointmentSchedule.stream()
-                 .anyMatch(b -> b.getTreatment() != null && b.getTreatment().getPhysiotherapist() != null
-                               && b.getTreatment().getPhysiotherapist().equals(bookingPhysio)
-                               && b.getTreatment().getDateTime() != null
-                               && b.getTreatment().getDateTime().equals(bookingTime)
-                               && "booked".equals(b.getStatus()));
-         if (physioTimeConflict) {
-             System.err.println("[MANAGER CONFLICT] Booking failed: Physiotherapist " + bookingPhysio.getStaffName() + " is already booked at " + bookingTime.format(STANDARD_DATE_TIME_FORMAT));
-             return null;
-         }
+        boolean physioTimeConflict = appointmentSchedule.stream()
+                .anyMatch(b -> b.getTreatment() != null && b.getTreatment().getPhysiotherapist() != null
+                && b.getTreatment().getPhysiotherapist().equals(bookingPhysio)
+                && b.getTreatment().getDateTime() != null
+                && b.getTreatment().getDateTime().equals(bookingTime)
+                && "booked".equals(b.getStatus()));
+        if (physioTimeConflict) {
+            System.err.println("[MANAGER CONFLICT] Booking failed: Physiotherapist " + bookingPhysio.getStaffName() + " is already booked at " + bookingTime.format(STANDARD_DATE_TIME_FORMAT));
+            return null;
+        }
 
-         Booking newBooking = new Booking(patient, treatment);
-         appointmentSchedule.add(newBooking);
-         System.out.println("[MANAGER INFO] Booking created successfully: " + newBooking);
-         return newBooking;
+        Booking newBooking = new Booking(patient, treatment);
+        appointmentSchedule.add(newBooking);
+        System.out.println("[MANAGER INFO] Booking created successfully: " + newBooking);
+        return newBooking;
     }
 
     public Booking findBookingById(String bookingId) {
@@ -456,8 +506,8 @@ public class ClinicManager {
         String targetStatus = (newStatus != null) ? newStatus.trim().toLowerCase() : null;
 
         if (targetStatus == null || (!targetStatus.equals("cancelled") && !targetStatus.equals("attended"))) {
-             System.err.println("[MANAGER VALIDATION] Invalid target status specified: '" + newStatus + "'. Must be 'cancelled' or 'attended'.");
-             return false;
+            System.err.println("[MANAGER VALIDATION] Invalid target status specified: '" + newStatus + "'. Must be 'cancelled' or 'attended'.");
+            return false;
         }
 
         if (currentStatus.equals("cancelled") || currentStatus.equals("attended")) {
@@ -466,22 +516,22 @@ public class ClinicManager {
         }
 
         if (targetStatus.equals("cancelled")) {
-             if (booking.getTreatment() != null && booking.getTreatment().getDateTime() != null &&
-                 booking.getTreatment().getDateTime().isBefore(LocalDateTime.now())) {
-                  System.err.println("[MANAGER INFO] Cannot cancel booking " + bookingId + " because it is in the past.");
-                  // return false; // Uncomment if cancelling past bookings is disallowed
-             }
+            if (booking.getTreatment() != null && booking.getTreatment().getDateTime() != null
+                    && booking.getTreatment().getDateTime().isBefore(LocalDateTime.now())) {
+                System.err.println("[MANAGER INFO] Cannot cancel booking " + bookingId + " because it is in the past.");
+                // return false; // Uncomment if cancelling past bookings is disallowed
+            }
             booking.setStatus(targetStatus);
             System.out.println("[MANAGER INFO] Booking " + bookingId + " status changed to 'cancelled'.");
             return true;
         }
 
         if (targetStatus.equals("attended")) {
-             if (booking.getTreatment() != null && booking.getTreatment().getDateTime() != null &&
-                 booking.getTreatment().getDateTime().isAfter(LocalDateTime.now())) {
-                  System.err.println("[MANAGER INFO] Cannot mark booking " + bookingId + " as attended because it is still in the future.");
-                  return false;
-             }
+            if (booking.getTreatment() != null && booking.getTreatment().getDateTime() != null
+                    && booking.getTreatment().getDateTime().isAfter(LocalDateTime.now())) {
+                System.err.println("[MANAGER INFO] Cannot mark booking " + bookingId + " as attended because it is still in the future.");
+                return false;
+            }
             booking.setStatus(targetStatus);
             System.out.println("[MANAGER INFO] Booking " + bookingId + " status changed to 'attended'.");
             return true;
@@ -490,22 +540,26 @@ public class ClinicManager {
         return false;
     }
 
-     private Patient findPatientById(String patientId) {
-         if (patientId == null || patientId.trim().isEmpty()) return null;
-         String targetId = patientId.trim();
-         return registeredPatients.stream()
-                 .filter(p -> p.getPatientId().equalsIgnoreCase(targetId))
-                 .findFirst()
-                 .orElse(null);
-     }
+    private Patient findPatientById(String patientId) {
+        if (patientId == null || patientId.trim().isEmpty()) {
+            return null;
+        }
+        String targetId = patientId.trim();
+        return registeredPatients.stream()
+                .filter(p -> p.getPatientId().equalsIgnoreCase(targetId))
+                .findFirst()
+                .orElse(null);
+    }
 
-      private Treatment findTreatmentById(String treatmentId) {
-          if (treatmentId == null || treatmentId.trim().isEmpty()) return null;
-          String targetId = treatmentId.trim();
-         return availableTreatments.stream()
-                 .filter(t -> t.getTreatmentId().equalsIgnoreCase(targetId))
-                 .findFirst()
-                 .orElse(null);
-     }
+    private Treatment findTreatmentById(String treatmentId) {
+        if (treatmentId == null || treatmentId.trim().isEmpty()) {
+            return null;
+        }
+        String targetId = treatmentId.trim();
+        return availableTreatments.stream()
+                .filter(t -> t.getTreatmentId().equalsIgnoreCase(targetId))
+                .findFirst()
+                .orElse(null);
+    }
 
 }

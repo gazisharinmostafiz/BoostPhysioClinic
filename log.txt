@@ -1,0 +1,77 @@
+commit 1c13c34631ea3c02c71ec7d7c8f16934f09c8130
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Sun Apr 27 14:43:32 2025 +0100
+
+    Complete 2.0
+
+commit 23a5fd72ad48243182e507a7236c5f85ac18e317
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Sun Apr 27 14:17:01 2025 +0100
+
+    error fixed and removePatient test passed
+
+commit d27e9b661e0b86c997af7a651ecaa15754464810
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Sun Apr 27 11:39:59 2025 +0100
+
+    Test Case Added - Update : 1.0
+
+commit 5d915b4cdd22857d5f3b9de6f2b16f8ee435a488
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Sun Apr 27 02:19:17 2025 +0100
+
+    Complete 1.1
+
+commit 9be3c5b60fc2e2aff3b1eb2d3e8fa3c825e1d417
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Sun Apr 27 01:34:01 2025 +0100
+
+    Add missing methods for booking search to ClinicManager errors
+
+commit f9f982a892d48b9b18f00a36803fcd79f6f6bc30
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Sun Apr 27 01:26:09 2025 +0100
+
+    Complete 1.0
+
+commit 488669ecbeeb308937fe8f9f043105662b7136c4
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Fri Apr 25 09:08:09 2025 +0100
+
+    Complete Add Patient and Remove Patient part
+
+commit 16c5fab38bde3e6f53823d659ae240097976c07f
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Thu Apr 24 13:03:22 2025 +0100
+
+    refactor: Update sample data with names and addresses
+
+commit 921bdb0102ca744f44d14acfa49904404994496f
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Wed Apr 23 13:44:24 2025 +0100
+
+    modified file structure
+
+commit 9c3568d16347a3f5b8fb8ba269be8d6fae9301f1
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Wed Apr 23 13:41:55 2025 +0100
+
+    Patient's personal details stores
+
+commit f5ca7ac4ec32d1f291aef6e1a02e0f79c56b644f
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Wed Apr 23 13:22:18 2025 +0100
+
+    UI FRAME DESIGN
+
+commit 7231f704651c2e4991353f543cddf232352d9f7d
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Wed Apr 23 12:09:45 2025 +0100
+
+    class file created
+
+commit f7505b802b57aaa40ce363716105adf8e644e1e6
+Author: gazisharinmostafiz <sharin.mostafiz@gmail.com>
+Date:   Wed Apr 23 11:50:43 2025 +0100
+
+    environment setup
