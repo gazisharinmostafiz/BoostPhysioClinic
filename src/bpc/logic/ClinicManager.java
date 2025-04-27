@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -185,6 +186,40 @@ public class ClinicManager {
         return new ArrayList<>(appointmentSchedule);
     }
 
+public List<String> getUniqueExpertiseNames() {
+    return clinicStaff.stream() 
+            .flatMap(physio -> physio.getAreasOfExpertise().stream()) 
+            .map(Expertise::getName) 
+            .filter(Objects::nonNull) 
+            .map(String::trim)
+            .filter(name -> !name.isEmpty())
+            .distinct()
+            .sorted(String.CASE_INSENSITIVE_ORDER) 
+            .collect(Collectors.toList()); 
+}
+
+
+public List<String> getPhysiotherapistDisplayList() {
+    return clinicStaff.stream()
+            .sorted(Comparator.comparing(Physiotherapist::getStaffName, String.CASE_INSENSITIVE_ORDER)) // Sort by name
+            .map(p -> p.getStaffName() + " (" + p.getStaffId() + ")") // Format as "Name (ID)"
+            .collect(Collectors.toList());
+}
+
+
+public String findPhysioNameFromDisplay(String displayName) {
+    if (displayName == null || !displayName.contains(" (")) {
+        return null;
+    }
+    
+    String namePart = displayName.substring(0, displayName.lastIndexOf(" ("));
+    
+    return clinicStaff.stream()
+            .filter(p -> p.getStaffName().equals(namePart))
+            .map(Physiotherapist::getStaffName)
+            .findFirst()
+            .orElse(null); 
+}
 
     public boolean removePatient(String patientId) {
         if (patientId == null || patientId.trim().isEmpty()) {
