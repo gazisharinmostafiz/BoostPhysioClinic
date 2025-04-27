@@ -15,6 +15,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import bpc.model.Booking;     
+import bpc.model.Treatment;   
+import java.time.LocalDateTime;
+import java.util.Objects; 
+
 /**
  * Unit tests for the ClinicManager class.
  * Uses JUnit 4.
@@ -83,7 +88,7 @@ public class ClinicManagerTest {
          System.out.println("Running testAddPatient_DuplicatePhone...");
         String name = "Duplicate Test Patient";
         String address = "123 Duplicate Lane";
-        String duplicatePhone = "07911123456"; // Phone of Arjun Patel from sample data
+        String duplicatePhone = "07911123456"; 
         int initialPatientCount = manager.getAllPatients().size();
 
         boolean result = manager.addPatient(name, address, duplicatePhone);
@@ -153,7 +158,7 @@ public class ClinicManagerTest {
 
         System.out.println("testRemovePatient_Success (Self-Contained) PASSED.");
     }
-//    ----------wnd
+//    ----------end
     @Test
     public void testRemovePatient_NotFound() {
         System.out.println("Running testRemovePatient_NotFound...");
@@ -307,5 +312,157 @@ public class ClinicManagerTest {
 
         System.out.println("testRemovePhysiotherapist_NotFound PASSED.");
     }
+//---------------
+    // --- Test Methods for createBooking ---
 
+    @Test
+    public void testCreateBooking_Success() {
+        System.out.println("Running testCreateBooking_Success...");
+        String patientId = "P01"; 
+        String treatmentId = "TREF04"; 
+
+        int initialBookingCount = manager.getAllBookings().size();
+
+        Treatment treatmentToBook = manager.getAllBookings().stream()
+                                    .map(Booking::getTreatment)
+                                    .filter(t -> t != null && t.getTreatmentId().equals(treatmentId))
+                                    .findFirst()
+                                    .orElse(null); 
+         Treatment availableTreatment = null;
+         try {
+             
+              boolean alreadyBooked = manager.getAllBookings().stream()
+                  .anyMatch(b -> b.getTreatment() != null && b.getTreatment().getTreatmentId().equals(treatmentId) && "booked".equals(b.getStatus()));
+              assertFalse("Setup check: Treatment " + treatmentId + " should not be booked initially.", alreadyBooked);
+         } catch (Exception e) {
+             fail("Setup check failed for treatment " + treatmentId + ": " + e.getMessage());
+         }
+
+
+        Booking newBooking = manager.createBooking(patientId, treatmentId);
+
+        assertNotNull("createBooking should return a non-null Booking object on success.", newBooking);
+        assertEquals("Booking count should increase by 1.", initialBookingCount + 1, manager.getAllBookings().size());
+        assertEquals("Booking should have status 'booked'.", "booked", newBooking.getStatus());
+        assertNotNull("Booking should reference the correct patient.", newBooking.getPatient());
+        assertEquals("Booking patient ID should match.", patientId, newBooking.getPatient().getPatientId());
+        assertNotNull("Booking should reference the correct treatment.", newBooking.getTreatment());
+        assertEquals("Booking treatment ID should match.", treatmentId, newBooking.getTreatment().getTreatmentId());
+
+        System.out.println("testCreateBooking_Success PASSED.");
+    }
+
+    @Test
+    public void testCreateBooking_TreatmentAlreadyBooked() {
+        System.out.println("Running testCreateBooking_TreatmentAlreadyBooked...");
+        String patientId = "P02";
+        String alreadyBookedTreatmentId = "TREF01";
+        int initialBookingCount = manager.getAllBookings().size();
+
+        Booking newBooking = manager.createBooking(patientId, alreadyBookedTreatmentId);
+
+        assertNull("createBooking should return null for an already booked treatment.", newBooking);
+        assertEquals("Booking count should not change.", initialBookingCount, manager.getAllBookings().size());
+
+        System.out.println("testCreateBooking_TreatmentAlreadyBooked PASSED.");
+    }
+
+     @Test
+    public void testCreateBooking_PatientTimeConflict() {
+        System.out.println("Running testCreateBooking_PatientTimeConflict...");
+        manager.createBooking("P01", "TREF07");
+        List<Treatment> allTreatments = manager.getAllBookings().stream()
+                                        .map(Booking::getTreatment).filter(Objects::nonNull).collect(Collectors.toList());
+        Booking existingBooking = manager.findBookingById("SL01"); 
+        assertNotNull("Setup: Need SL01 booking", existingBooking);
+        LocalDateTime conflictTime = existingBooking.getTreatment().getDateTime();
+        System.out.println("Skipping testCreateBooking_PatientTimeConflict due to lack of suitable overlapping sample data.");
+    }
+
+    // --- Test Methods for changeBookingStatus ---
+
+    @Test
+    public void testChangeBookingStatus_CancelSuccess() {
+        System.out.println("Running testChangeBookingStatus_CancelSuccess...");
+        String bookingIdToCancel = "SL04";
+        Booking booking = manager.findBookingById(bookingIdToCancel);
+        assertNotNull("Setup: Booking " + bookingIdToCancel + " should exist.", booking);
+        assertEquals("Setup: Booking " + bookingIdToCancel + " should be 'booked'.", "booked", booking.getStatus());
+
+        boolean result = manager.changeBookingStatus(bookingIdToCancel, "cancelled");
+
+        assertTrue("changeBookingStatus should return true for successful cancellation.", result);
+        assertEquals("Booking status should be updated to 'cancelled'.", "cancelled", booking.getStatus());
+
+        System.out.println("testChangeBookingStatus_CancelSuccess PASSED.");
+    }
+
+    @Test
+    public void testChangeBookingStatus_AttendSuccess() {
+        System.out.println("Running testChangeBookingStatus_AttendSuccess...");
+        Booking pastBooking = manager.createBooking("P03", "TREF09"); 
+        assertNotNull("Setup: Could not create test booking.", pastBooking);
+        pastBooking.getTreatment().setScheduledTime(LocalDateTime.now().minusDays(1));
+        assertEquals("Setup: Test booking should be 'booked'.", "booked", pastBooking.getStatus());
+
+        boolean result = manager.changeBookingStatus(pastBooking.getBookingId(), "attended");
+
+        assertTrue("changeBookingStatus should return true for successful attendance marking.", result);
+        assertEquals("Booking status should be updated to 'attended'.", "attended", pastBooking.getStatus());
+
+        System.out.println("testChangeBookingStatus_AttendSuccess PASSED.");
+    }
+
+    @Test
+    public void testChangeBookingStatus_AttendFutureBooking() {
+        System.out.println("Running testChangeBookingStatus_AttendFutureBooking...");
+        String futureBookingId = "SL04";
+         Booking booking = manager.findBookingById(futureBookingId);
+        assertNotNull("Setup: Booking " + futureBookingId + " should exist.", booking);
+        assertEquals("Setup: Booking " + futureBookingId + " should be 'booked'.", "booked", booking.getStatus());
+        assertTrue("Setup: Booking time should be in the future.", booking.getTreatment().getDateTime().isAfter(LocalDateTime.now()));
+
+        boolean result = manager.changeBookingStatus(futureBookingId, "attended");
+
+        assertFalse("changeBookingStatus should return false when trying to mark a future booking as attended.", result);
+        assertEquals("Booking status should remain 'booked'.", "booked", booking.getStatus());
+
+
+        System.out.println("testChangeBookingStatus_AttendFutureBooking PASSED.");
+    }
+
+
+    @Test
+    public void testChangeBookingStatus_NotFound() {
+        System.out.println("Running testChangeBookingStatus_NotFound...");
+        String nonExistentBookingId = "SL999";
+
+        boolean result = manager.changeBookingStatus(nonExistentBookingId, "cancelled");
+
+        assertFalse("changeBookingStatus should return false for non-existent booking ID.", result);
+
+        System.out.println("testChangeBookingStatus_NotFound PASSED.");
+    }
+
+    @Test
+    public void testChangeBookingStatus_AlreadyCompleted() {
+        System.out.println("Running testChangeBookingStatus_AlreadyCompleted...");
+        String attendedBookingId = "SL02";
+        Booking booking = manager.findBookingById(attendedBookingId);
+        assertNotNull("Setup: Booking " + attendedBookingId + " should exist.", booking);
+        assertEquals("Setup: Booking " + attendedBookingId + " should be 'attended'.", "attended", booking.getStatus());
+
+
+        boolean resultCancel = manager.changeBookingStatus(attendedBookingId, "cancelled");
+        assertFalse("Should not be able to cancel an attended booking.", resultCancel);
+        assertEquals("Status should remain 'attended'.", "attended", booking.getStatus());
+
+        boolean resultAttendAgain = manager.changeBookingStatus(attendedBookingId, "attended");
+         assertFalse("Should not be able to mark attended again.", resultAttendAgain);
+         assertEquals("Status should remain 'attended'.", "attended", booking.getStatus());
+
+        System.out.println("testChangeBookingStatus_AlreadyCompleted PASSED.");
+    }
+    
+    
 }

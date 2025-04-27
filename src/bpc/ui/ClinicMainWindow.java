@@ -386,7 +386,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         textArea.setEditable(false);
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         textArea.setRows(30); // Adjusted size
-        textArea.setColumns(75); // Adjusted size
+        textArea.setColumns(160); // Adjusted size
         JScrollPane scrollPane = new JScrollPane(textArea);
         JOptionPane.showMessageDialog(this, scrollPane, "Clinic Reports", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -401,7 +401,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
                 for (Physiotherapist physio : staffList) { sb.append("ID: ").append(physio.getStaffId()).append("\n").append("Name: ").append(physio.getStaffName()).append("\n").append("Address: ").append(physio.getPracticeAddress()).append("\n").append("Phone: ").append(physio.getContactNumber()).append("\n").append("Expertise: ").append(physio.getAreasOfExpertise()).append("\n").append("-----------------------------\n"); }
                 JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false);
                 textArea.setRows(20); // Adjusted size
-                textArea.setColumns(50); // Adjusted size
+                textArea.setColumns(160); // Adjusted size
                 JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "Physiotherapist Details", JOptionPane.INFORMATION_MESSAGE);
             }
         } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
@@ -417,7 +417,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
                 for (Patient patient : patientList) { sb.append("ID: ").append(patient.getPatientId()).append("\n").append("Name: ").append(patient.getFullName()).append("\n").append("Address: ").append(patient.getHomeAddress()).append("\n").append("Phone: ").append(patient.getContactPhone()).append("\n").append("-----------------------------\n"); }
                 JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false);
                 textArea.setRows(20); // Adjusted size
-                textArea.setColumns(50); // Adjusted size
+                textArea.setColumns(160); // Adjusted size
                 JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "Patient Details", JOptionPane.INFORMATION_MESSAGE);
             }
         } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
@@ -434,7 +434,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
                 for (Booking booking : bookingList) { sb.append(booking.toString()).append("\n").append("---------------------------------------------------\n"); }
                 JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
                 textArea.setRows(25); // Adjusted size
-                textArea.setColumns(80); // Adjusted size
+                textArea.setColumns(160); // Adjusted size
                 JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "All Bookings", JOptionPane.INFORMATION_MESSAGE);
             }
         } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
