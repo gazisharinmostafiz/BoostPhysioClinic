@@ -260,7 +260,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
     }
 
       private void bookAppointmentButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("Book Appointment button clicked (Enhanced).");
+        System.out.println("Book Appointment button clicked (Enhanced List).");
         if (clinicManager == null) { JOptionPane.showMessageDialog(this, "Critical Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); return; }
         String patientId = JOptionPane.showInputDialog(this, "Enter the ID of the patient booking the appointment (e.g., PT01):", "Book Appointment - Step 1: Patient ID", JOptionPane.QUESTION_MESSAGE);
         if (patientId == null || patientId.trim().isEmpty()) { System.out.println("Booking cancelled by user (Patient ID step)."); return; }
@@ -273,37 +273,32 @@ public class ClinicMainWindow extends javax.swing.JFrame {
             searchType = "expertise";
             List<String> expertiseNames = clinicManager.getUniqueExpertiseNames();
             if (expertiseNames.isEmpty()) { JOptionPane.showMessageDialog(this, "No expertise areas found in the system.", "Error", JOptionPane.WARNING_MESSAGE); return; }
-            StringBuilder expertiseOptions = new StringBuilder("Select an Expertise Area by number:\n\n");
-            for (int i = 0; i < expertiseNames.size(); i++) { expertiseOptions.append(String.format("%d. %s\n", (i + 1), expertiseNames.get(i))); }
-            String expertiseChoiceInput = JOptionPane.showInputDialog(this, expertiseOptions.toString(), "Book Appointment - Step 3a: Select Expertise", JOptionPane.QUESTION_MESSAGE);
-            if (expertiseChoiceInput == null) { System.out.println("Booking cancelled by user (Expertise selection step)."); return; }
-            try { int index = Integer.parseInt(expertiseChoiceInput.trim()) - 1; if (index >= 0 && index < expertiseNames.size()) { criteria = expertiseNames.get(index); } else { JOptionPane.showMessageDialog(this, "Invalid selection number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; } }
-            catch (NumberFormatException e) { JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+            JComboBox<String> expertiseComboBox = new JComboBox<>(expertiseNames.toArray(new String[0]));
+            int result = JOptionPane.showConfirmDialog(this, expertiseComboBox, "Book Appointment - Step 3a: Select Expertise", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) { criteria = (String) expertiseComboBox.getSelectedItem(); if (criteria == null) { System.out.println("No expertise selected."); return; } }
+            else { System.out.println("Booking cancelled by user (Expertise selection step)."); return; }
         } else {
             searchType = "physioName";
             List<String> physioDisplayList = clinicManager.getPhysiotherapistDisplayList();
              if (physioDisplayList.isEmpty()) { JOptionPane.showMessageDialog(this, "No physiotherapists found in the system.", "Error", JOptionPane.WARNING_MESSAGE); return; }
-            StringBuilder physioOptions = new StringBuilder("Select a Physiotherapist by number:\n\n");
-            for (int i = 0; i < physioDisplayList.size(); i++) { physioOptions.append(String.format("%d. %s\n", (i + 1), physioDisplayList.get(i))); }
-             String physioChoiceInput = JOptionPane.showInputDialog(this, physioOptions.toString(), "Book Appointment - Step 3b: Select Physiotherapist", JOptionPane.QUESTION_MESSAGE);
-             if (physioChoiceInput == null) { System.out.println("Booking cancelled by user (Physio selection step)."); return; }
-             try { int index = Integer.parseInt(physioChoiceInput.trim()) - 1; if (index >= 0 && index < physioDisplayList.size()) { String selectedDisplay = physioDisplayList.get(index); criteria = clinicManager.findPhysioNameFromDisplay(selectedDisplay); if (criteria == null) { JOptionPane.showMessageDialog(this, "Error retrieving physiotherapist name.", "Internal Error", JOptionPane.ERROR_MESSAGE); return; } } else { JOptionPane.showMessageDialog(this, "Invalid selection number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; } }
-             catch (NumberFormatException e) { JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+            JComboBox<String> physioComboBox = new JComboBox<>(physioDisplayList.toArray(new String[0]));
+            int result = JOptionPane.showConfirmDialog(this, physioComboBox, "Book Appointment - Step 3b: Select Physiotherapist", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+             if (result == JOptionPane.OK_OPTION) { String selectedDisplay = (String) physioComboBox.getSelectedItem(); if (selectedDisplay == null) { System.out.println("No physiotherapist selected."); return;} criteria = clinicManager.findPhysioNameFromDisplay(selectedDisplay); if (criteria == null) { JOptionPane.showMessageDialog(this, "Error retrieving physiotherapist name.", "Internal Error", JOptionPane.ERROR_MESSAGE); return; } }
+             else { System.out.println("Booking cancelled by user (Physio selection step)."); return; }
         }
         List<Treatment> availableSlots = clinicManager.findAvailableTreatments(searchType, criteria);
         if (availableSlots.isEmpty()) { JOptionPane.showMessageDialog(this, "No available future treatment slots found matching your criteria:\n" + "Search Type: " + searchType + "\n" + "Criteria: " + criteria, "No Slots Found", JOptionPane.INFORMATION_MESSAGE); return; }
-        StringBuilder availableSlotsText = new StringBuilder("Please choose a slot number:\n\n");
-        for (int i = 0; i < availableSlots.size(); i++) { Treatment slot = availableSlots.get(i); String physioName = (slot.getPhysiotherapist() != null) ? slot.getPhysiotherapist().getStaffName() : "Unknown Physio"; availableSlotsText.append(String.format("%d. %s with %s\n   on %s in Room %d (ID: %s)\n", (i + 1), slot.getTreatmentName(), physioName, slot.getDateTimeFormatted(), slot.getRoomNumber(), slot.getTreatmentId())); }
-        String choiceInput = JOptionPane.showInputDialog(this, availableSlotsText.toString(), "Book Appointment - Step 4: Select Slot", JOptionPane.PLAIN_MESSAGE);
-        if (choiceInput == null) { System.out.println("Booking cancelled by user (Slot selection step)."); return; }
-        int chosenIndex = -1; Treatment selectedTreatment = null;
-        try { chosenIndex = Integer.parseInt(choiceInput.trim()) - 1; if (chosenIndex >= 0 && chosenIndex < availableSlots.size()) { selectedTreatment = availableSlots.get(chosenIndex); } else { JOptionPane.showMessageDialog(this, "Invalid selection number.", "Input Error", JOptionPane.WARNING_MESSAGE); return; } }
-        catch (NumberFormatException e) { JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number corresponding to the slot.", "Input Error", JOptionPane.WARNING_MESSAGE); return; }
+        String[] slotOptions = new String[availableSlots.size()];
+        for (int i = 0; i < availableSlots.size(); i++) { Treatment slot = availableSlots.get(i); String physioName = (slot.getPhysiotherapist() != null) ? slot.getPhysiotherapist().getStaffName() : "Unknown Physio"; slotOptions[i] = String.format("%s with %s on %s (Room %d) - ID: %s", slot.getTreatmentName(), physioName, slot.getDateTimeFormatted(), slot.getRoomNumber(), slot.getTreatmentId()); }
+        Object selectedValue = JOptionPane.showInputDialog(this, "Select an available appointment slot:", "Book Appointment - Step 4: Select Slot", JOptionPane.PLAIN_MESSAGE, null, slotOptions, slotOptions[0]);
+        if (selectedValue == null) { System.out.println("Booking cancelled by user (Slot selection step)."); return; }
+        Treatment selectedTreatment = null; String selectedString = (String) selectedValue;
+        for (int i = 0; i < slotOptions.length; i++) { if (slotOptions[i].equals(selectedString)) { selectedTreatment = availableSlots.get(i); break; } }
         if (selectedTreatment != null) {
             Booking newBooking = clinicManager.createBooking(patientId, selectedTreatment.getTreatmentId());
             if (newBooking != null) { JOptionPane.showMessageDialog(this, "Appointment booked successfully!\n\n" + "Booking ID: " + newBooking.getBookingId() + "\n" + "Patient: " + newBooking.getPatient().getFullName() + "\n" + "Treatment: " + newBooking.getTreatment().getTreatmentName() + "\n" + "Physio: " + newBooking.getTreatment().getPhysiotherapist().getStaffName() + "\n" + "Date/Time: " + newBooking.getTreatment().getDateTimeFormatted() + "\n" + "Room: " + newBooking.getTreatment().getRoomNumber(), "Booking Confirmation", JOptionPane.INFORMATION_MESSAGE); System.out.println("Booking successful: " + newBooking.getBookingId()); }
             else { JOptionPane.showMessageDialog(this, "Failed to book appointment.\n" + "Possible reasons:\n" + "- Patient/Treatment ID invalid.\n" + "- Slot became unavailable.\n" + "- Time/Room/Physio conflict detected.\n" + "(Check console logs for details)", "Booking Error", JOptionPane.ERROR_MESSAGE); System.out.println("Booking failed for Patient " + patientId + " and Treatment " + selectedTreatment.getTreatmentId()); }
-        } else { JOptionPane.showMessageDialog(this, "An unexpected error occurred selecting the treatment slot.", "Error", JOptionPane.ERROR_MESSAGE); }
+        } else { JOptionPane.showMessageDialog(this, "An unexpected error occurred matching the selected treatment slot.", "Error", JOptionPane.ERROR_MESSAGE); }
     }
 
       private void manageBookingButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -390,7 +385,8 @@ public class ClinicMainWindow extends javax.swing.JFrame {
         JTextArea textArea = new JTextArea(reportText.toString());
         textArea.setEditable(false);
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        textArea.setRows(25); textArea.setColumns(60);
+        textArea.setRows(30); // Adjusted size
+        textArea.setColumns(75); // Adjusted size
         JScrollPane scrollPane = new JScrollPane(textArea);
         JOptionPane.showMessageDialog(this, scrollPane, "Clinic Reports", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -403,7 +399,9 @@ public class ClinicMainWindow extends javax.swing.JFrame {
             else {
                 StringBuilder sb = new StringBuilder("--- All Physiotherapists ---\n\n");
                 for (Physiotherapist physio : staffList) { sb.append("ID: ").append(physio.getStaffId()).append("\n").append("Name: ").append(physio.getStaffName()).append("\n").append("Address: ").append(physio.getPracticeAddress()).append("\n").append("Phone: ").append(physio.getContactNumber()).append("\n").append("Expertise: ").append(physio.getAreasOfExpertise()).append("\n").append("-----------------------------\n"); }
-                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setRows(15); textArea.setColumns(40);
+                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false);
+                textArea.setRows(20); // Adjusted size
+                textArea.setColumns(50); // Adjusted size
                 JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "Physiotherapist Details", JOptionPane.INFORMATION_MESSAGE);
             }
         } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
@@ -417,7 +415,9 @@ public class ClinicMainWindow extends javax.swing.JFrame {
             else {
                 StringBuilder sb = new StringBuilder("--- All Patients ---\n\n");
                 for (Patient patient : patientList) { sb.append("ID: ").append(patient.getPatientId()).append("\n").append("Name: ").append(patient.getFullName()).append("\n").append("Address: ").append(patient.getHomeAddress()).append("\n").append("Phone: ").append(patient.getContactPhone()).append("\n").append("-----------------------------\n"); }
-                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setRows(15); textArea.setColumns(40);
+                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false);
+                textArea.setRows(20); // Adjusted size
+                textArea.setColumns(50); // Adjusted size
                 JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "Patient Details", JOptionPane.INFORMATION_MESSAGE);
             }
         } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
@@ -432,7 +432,9 @@ public class ClinicMainWindow extends javax.swing.JFrame {
                 bookingList.sort(Comparator.comparing(b -> (b.getTreatment() != null && b.getTreatment().getDateTime() != null) ? b.getTreatment().getDateTime() : LocalDateTime.MAX ));
                 StringBuilder sb = new StringBuilder("--- All Bookings ---\n\n");
                 for (Booking booking : bookingList) { sb.append(booking.toString()).append("\n").append("---------------------------------------------------\n"); }
-                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setFont(new Font("Monospaced", Font.PLAIN, 12)); textArea.setRows(20); textArea.setColumns(70);
+                JTextArea textArea = new JTextArea(sb.toString()); textArea.setEditable(false); textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                textArea.setRows(25); // Adjusted size
+                textArea.setColumns(80); // Adjusted size
                 JScrollPane scrollPane = new JScrollPane(textArea); JOptionPane.showMessageDialog(this, scrollPane, "All Bookings", JOptionPane.INFORMATION_MESSAGE);
             }
         } else { JOptionPane.showMessageDialog(this, "Error: Clinic Manager not available.", "System Error", JOptionPane.ERROR_MESSAGE); }
@@ -452,7 +454,7 @@ public class ClinicMainWindow extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
+        /* Set the System look and feel */
         try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) { Logger.getLogger(ClinicMainWindow.class.getName()).log(Level.SEVERE, null, ex); }
 
